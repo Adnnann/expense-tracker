@@ -30,13 +30,14 @@ const intToString = (num) => {
   }
     return (
         <Plot
+        
         data={[
           {
             values: [expense, income],
             type: 'pie',
             labels: [`${expense ? 'Expense <br /> -' + intToString(expense) : ''}`, `${income ? 'Income <br />' + intToString(income) : ''}`],
             textinfo:'label',
-            automargin: true,
+           // automargin: true,
             showlegend: false,
             textfont:{
                 size:12,
@@ -47,9 +48,10 @@ const intToString = (num) => {
             },
           },
         ]}
-        layout={{width: 400, height: 400, margin:{"t":0} }}
+        layout={{width: 300, height: 300, font:{size:20, color:['green','red']}, margin: {"t":10, "b":10, "l": 10, "r":0,pad:"0"}}}
+   
       /> 
-         //margin: {"t": 0, "b": 0, "l": 0, "r": 0}  
+        
           
       );
 }

@@ -12,7 +12,7 @@ import {
 } from "../../features/usersSlice"
 import { useDispatch, useSelector} from "react-redux"
 import { useNavigate } from 'react-router';
-import {  Grid} from "@material-ui/core";
+import {  Box, Grid, Typography} from "@material-ui/core";
 import Item from '@mui/material/Grid';
 import Dialog from "@material-ui/core/Dialog"
 import DialogActions from "@material-ui/core/DialogActions"
@@ -194,18 +194,27 @@ const Statistics = () => {
 
     return (
 
-     <Grid container>
+     <Grid container justifyContent="center">
       
-        <Grid container item xs={12} md={12} lg={12} xl={12}>
+        <Grid item xs={12} md={4} lg={4} xl={4}>
     
                 {/* Left side menu buttons */}
-                <>
-                <ButtonGroup style={{marginTop:"2%", borderBottomStyle:"solid"}}>
-                    <Button className={classes.buttonGroup} onClick={dashboard}>Dashboard</Button>
+                <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign:'center',
+                fontStyle:'italic',
+                marginBottom:"50px"
+            }}
+            > 
+                
+             
+                <ButtonGroup  sx={{marginTop:"5px",borderBottomStyle:"solid"}}>
+                    <Button className={classes.buttonGroup} onClick={dashboard} >Dashboard</Button>
                     
-                    {//menu for transactions
-                    }
-                    <><div>
+              
                     <Button
                     style={{textTransform:'none'}}
                     id="demo-customized-button"
@@ -244,10 +253,9 @@ const Statistics = () => {
                     </MenuItem>
                     
                 </StyledMenu>
-                </div>
-                </>
+              
 
-                <><div style={{marginLeft:"auto"}}>
+       
                     <Button
                     style={{textTransform:'none'}}
                     id="demo-customized-button"
@@ -286,33 +294,48 @@ const Statistics = () => {
                   
                     
                 </StyledMenu>
-                </div>
-                </>
+               </ButtonGroup>
+               {/* <Typography component={'p'} sx={{fontStyle:"italic"}} >
+            {`Overview level: ${statisticsOverviewLevel}`}
+        </Typography> */}
+            </Box>
         
-                </ButtonGroup>
-                </>
-        </Grid>
-
-        <Grid item xs={12} md={12} lg={12} xl={12}>
-           <p style={{marginLeft:'20%'}}>{statisticsOverviewLevel}</p> 
-        </Grid>
-
-        <Grid item xs={12} md={3} lg={3} xl={3}>
-          <Item>
-            <LeftPanelStatistics />
-          </Item>
-        </Grid>
-
-        
-        <Grid item xs={12} md={9} lg={9} xl={9} container alignItems="center">
-   
-          <Plots />
-          <RightPanelStatistics  /> 
-   
+              
           
         </Grid>
 
+  
+       
+       
+        
+   
 
+        <Grid item xs={12} md={12} lg={12} xl={12}>
+         
+            <LeftPanelStatistics />
+          
+        </Grid>
+
+        
+      
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign:'center',
+                fontStyle:'italic',
+                marginTop:"20px"
+            }}
+            > 
+          
+          <Plots /> 
+           </Box>
+          
+           <Grid item xs={12} md={9} lg={9} xl={12}> 
+        <RightPanelStatistics  /> 
+        </Grid> 
+        
     </Grid>
     
     

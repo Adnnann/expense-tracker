@@ -96,7 +96,7 @@ const RightSidePanel = () => {
 
   return (
  
-    <Paper sx={{ width: '100%', overflow: 'hidden', overflowX:"none", wordBreak:'break-all' }}>
+    <Paper sx={{ width: '100%', overflow: 'hidden', overflowX:"none", wordBreak:'break-all', marginTop:'20px' }}>
     { Object.keys(userTransactions).length !== 0 ? 
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">

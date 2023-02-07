@@ -8,7 +8,10 @@ import lineChartImage from '../../assets/images/lineChart.jpg'
 import barChartImage from '../../assets/images/barChart.png'  
 import pieChartImage from '../../assets/images/pieChart.png'  
 import { useDispatch} from 'react-redux';
-import { makeStyles } from "@material-ui/core"
+import { ButtonGroup, IconButton, makeStyles } from "@material-ui/core"
+import PieChartIcon from '@mui/icons-material/PieChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import TimelineIcon from '@mui/icons-material/Timeline';
 
 const useStyles = makeStyles(theme=>({
     card: {
@@ -54,30 +57,23 @@ const lineChart = () => {
     {/*  
     clicable images for user to select type of chart for statistical overview of data
     */}
-    <Card  className={classes.card} onClick={pieChart} >
-            <CardMedia
-            component="img"
-            image={pieChartImage}
-            alt="pie chart"
-            />
-      </Card>
 
-      <Card className={classes.card}  onClick={barChart} >
-        <CardMedia
-          component="img"
-          image={barChartImage}
-          alt="bar chart"
-          
-        />
-      </Card>
+<ButtonGroup>
+<IconButton onClick={pieChart}>
+<PieChartIcon sx={{fontSize:"48px", color:'green'}}  />
+</IconButton>
+<IconButton onClick={barChart}>
+<BarChartIcon sx={{fontSize:"48px", color:'purple'}} />
+</IconButton>
+<IconButton onClick={lineChart}>
+<TimelineIcon  sx={{fontSize:"48px", color:"aquamarine"}} />
+</IconButton>
+</ButtonGroup>
+ 
+    
+  
 
-      <Card className={classes.card} onClick={lineChart}>
-        <CardMedia
-          component="img"
-          image={lineChartImage}
-          alt="line chart"
-        />
-      </Card>
+  
                      
      </Box>
     

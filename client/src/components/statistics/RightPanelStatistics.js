@@ -97,7 +97,7 @@ if(Object.keys(userTransactions).length !== 0){
     
   return (
    
-    <Paper sx={{ overflow: 'hidden', overflowX:"none", wordBreak:'break-all', marginTop:"0", margin:'0 auto' }}>
+    <Paper sx={{ overflow: 'hidden', overflowX:"none", wordBreak:'break-all', marginTop:"0", margin:'0 auto', marginTop:'20px', width:{xl:"40%"} }}>
     
     {Object.keys(userTransactions).length !== 0 && Object.values(userTransactions.transactions).length !== 0 ?
       <TableContainer sx={{ maxHeight: 200 }}>

@@ -79,13 +79,13 @@ return(
     </Grid>
 
     <Grid item xs={12} md={8} lg={6} xl={6}>
-        <div style={{marginTop:'70px'}}>
+        {/* <div style={{marginTop:'70px'}}> */}
             {
                 Object.keys(userTransactions).length !== 0 ?
                 <RightSidePanel />
                 : 'Loading...'
             }  
-        </div>
+        {/* </div> */}
     </Grid>
 
 </Grid>

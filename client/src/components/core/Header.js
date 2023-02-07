@@ -18,7 +18,7 @@ import { styled, alpha } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import { useState } from "react";
-
+import Container from '@mui/material/Container';
 
 
 const StyledMenu = styled((props) => (
@@ -114,7 +114,9 @@ const Header = () => {
   const navigate = useNavigate()
   const userData = useSelector(getUserSigninData)
   const displayUserName = useSelector(getUserDataToDisplay)
-
+  const [anchorElNav, setAnchorElNav] = useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
+  
  
     const [anchorEl, setAnchorEl] = useState(null);
     
@@ -147,17 +149,38 @@ const Header = () => {
         dispatch(cleanStore())
         navigate('/')
     }
+
+    const handleOpenNavMenu = (event) => {
+      
+      setAnchorElNav(event.currentTarget);
+    };
+    const handleOpenUserMenu = (event) => {
+      setAnchorElUser(event.currentTarget);
+    };
+  
+    const handleCloseUserMenu = () => {
+      setAnchorElUser(null);
+    };
+    const handleCloseNavMenu = () => {
+      setAnchorElNav(null);
+    };
     return(
         
     <AppBar position="static" >
-
-        <Toolbar>
+   <Container maxWidth="xl">
+       
+     
+        <Toolbar disableGutters>
+          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}></Box>
             <Box
                 component="img"
                 sx={{
                 height: window.location.pathname === '/' 
                 || window.location.pathname === '/signin' 
                 || window.location.pathname === '/signup' ? 64 : 38,
+                xs:38,
+                marginTop:{xs:'4px'},
+                marginBottom:{xs:'4px'}
                 }}
                 alt="Expense tracker"
                 src="https://joyofandroid.com/wp-content/uploads/2019/06/monefy-money-manager-best-android-business-expense-tracker-finance-financial-income-list-add-deduct-minus-computer-smartphone.png"
@@ -168,7 +191,7 @@ const Header = () => {
                 || window.location.pathname === '/signup' ? 'h4' : 'h6'} className={window.location.pathname === '/' 
                 || window.location.pathname === '/signin' 
                 || window.location.pathname === '/signup' ? classes.title : classes.dashboardTitle}
-                sx={{display:{xs:'none'}}}>
+                sx={{display:{xs:'none', md:"block"}}}>
                 Personal Expense Tracker and Analyst
                  
             </Typography>
@@ -184,40 +207,52 @@ const Header = () => {
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                     variant="primary"
-                    disableElevation
-                    onClick={handleClick}
+                    
+                   onClick={handleOpenNavMenu}
                     endIcon={<KeyboardArrowDownIcon />}
                 >
                     Profile
                 </Button>
-                <StyledMenu
-                    id="demo-customized-menu"
-                    MenuListProps={{
-                    'aria-labelledby': 'demo-customized-button',
-                    }}
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                >
-                    <MenuItem onClick={editProfile} disableRipple>
-                         Edit Profile
+
+                <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              sx={{
+                display: { xs: 'block', md: 'none' },
+              }}
+            >
+               <MenuItem onClick={editProfile}>
+               <Typography textAlign="center">  Edit Profile</Typography>
                     </MenuItem>
 
                     <MenuItem onClick={editPassword} disableRipple>
-                         New Password
+                    <Typography textAlign="center">New Password</Typography>
                     </MenuItem>
 
                     <MenuItem onClick={deleteAccount} disableRipple>
-                        Delete Account
+                    <Typography textAlign="center"> Delete Account</Typography>
+                       
                     </MenuItem>
+            </Menu>
+              
+                   
                     
-                </StyledMenu>
+        
               </div>
             <Button variant="primary" onClick={signout} style={{textTransform:'none'}}>Signout</Button></>
             
         }
-
-        </Toolbar>
 
         { 
                 Object.keys(displayUserName).length !== 0 ?
@@ -229,6 +264,9 @@ const Header = () => {
                     </Typography>
                 : null
         }
+
+        </Toolbar>
+</Container>
 
     </AppBar>
     )
