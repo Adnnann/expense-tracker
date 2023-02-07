@@ -78,8 +78,6 @@ const StyledMenu = styled((props) => (
     },
   }));
 
-
-
 const useStyles = makeStyles(theme=>({
     card: {
         maxWidth: 600,
@@ -113,7 +111,6 @@ const useStyles = makeStyles(theme=>({
         margin: 'auto',
         marginBottom: theme.spacing(1),
     },
-    //
     buttonGroup:{
         textTransform: 'none',
         borderStyle:'solid',

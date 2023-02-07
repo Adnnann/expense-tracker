@@ -167,7 +167,8 @@ const Header = () => {
                 || window.location.pathname === '/signin' 
                 || window.location.pathname === '/signup' ? 'h4' : 'h6'} className={window.location.pathname === '/' 
                 || window.location.pathname === '/signin' 
-                || window.location.pathname === '/signup' ? classes.title : classes.dashboardTitle}>
+                || window.location.pathname === '/signup' ? classes.title : classes.dashboardTitle}
+                sx={{display:{xs:'none'}}}>
                 Personal Expense Tracker and Analyst
                  
             </Typography>

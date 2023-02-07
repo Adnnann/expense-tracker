@@ -1,6 +1,6 @@
-import moongose from 'mongoose'
+import mongoose from 'mongoose'
 
-const TransactionsSchema = new moongose.Schema({
+const TransactionsSchema = new mongoose.Schema({
     userId:{
        type:String
     },
@@ -52,7 +52,13 @@ const TransactionsSchema = new moongose.Schema({
 
 TransactionsSchema.path("title").validate(async function (title) {
     const transaction = await this.constructor.findOne({ title });    
-if (transaction) {    if (this.id === transaction.id) {    return true;    }    return false;    }    
-return true;   }, "Transaction title must be unique!");
-
-export default moongose.model('Transactions', TransactionsSchema)
+if (transaction) {    
+    if (this.id === transaction.id) {    
+        return true;    
+    }   
+     return false;    
+}    
+return true;   
+}, "Transaction title must be unique!");
+mongoose.set('strictQuery', true)
+export default mongoose.model('Transactions', TransactionsSchema)

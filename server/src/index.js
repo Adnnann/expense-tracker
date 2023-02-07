@@ -9,7 +9,7 @@ app.listen(config.port, err=>{
 })
 
 mongoose.Promise = global.Promise
-mongoose.connect(config.mongoUri, {useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(config.mongoURI, {useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => console.log('MongoDB successfully connected...'))
 .catch((e) => console.log(e))
 

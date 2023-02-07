@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import expressJwt from 'express-jwt'
+import { expressjwt } from 'express-jwt'
 import User from '../models/user.model'
 import config from '../config/config'
 
@@ -31,7 +31,9 @@ const signout = (req, res) => {
     res.send({message:'User signed out'})
 }
 
-const requireSignin = expressJwt({
+
+
+const requireSignin = expressjwt({
     secret:config.secret,
     algorithms:['HS256'],
     userProperty: 'auth',
@@ -44,5 +46,4 @@ const hasAuthorization = (req, res, next) => {
 }
 
 export default {signin, signout, hasAuthorization, requireSignin}
-
 

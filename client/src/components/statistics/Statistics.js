@@ -74,7 +74,7 @@ const StyledMenu = styled((props) => (
 
 const useStyles = makeStyles(theme=>({
     card: {
-        maxWidth: 600,
+       
         margin: 'auto',
         textAlign: 'center',
         marginTop: theme.spacing(2),
@@ -193,7 +193,7 @@ const Statistics = () => {
     }
 
     return (
-      <>
+
      <Grid container>
       
         <Grid container item xs={12} md={12} lg={12} xl={12}>
@@ -294,7 +294,7 @@ const Statistics = () => {
         </Grid>
 
         <Grid item xs={12} md={12} lg={12} xl={12}>
-            <p style={{marginLeft:'20%'}}>{statisticsOverviewLevel}</p>
+           <p style={{marginLeft:'20%'}}>{statisticsOverviewLevel}</p> 
         </Grid>
 
         <Grid item xs={12} md={3} lg={3} xl={3}>
@@ -305,10 +305,10 @@ const Statistics = () => {
 
         
         <Grid item xs={12} md={9} lg={9} xl={9} container alignItems="center">
-        <Item >
+   
           <Plots />
           <RightPanelStatistics  /> 
-          </Item>
+   
           
         </Grid>
 
@@ -316,20 +316,9 @@ const Statistics = () => {
     </Grid>
     
     
-    <Dialog open={false}>
-                <DialogTitle>Session expired</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        You have been logged out due to inactivity.<br />
-                        Please signin again
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                        <Button color="primary" autoFocus="autoFocus" onClick={redirectTosignin}>Signin</Button>
-                </DialogActions>
-            </Dialog>
+  
 
-        </>
+   
 )
     
 }

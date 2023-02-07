@@ -77,6 +77,7 @@ const handleChange = (event) => {
                                 //color in red, otherwise in green. To compare which one is higher 
                                 //first check if both incomes and expenses exist so that application
                                 //do not fall apart
+                            userTransactions?.transactions ?
                                 _.chain(Object.values(userTransactions.transactions)
                                 .filter(item=>item.type==='income'))
                                 .filter(groupingVar === 'day' ? {'day':`${date.format(new Date(),"dddd")}`}
@@ -146,7 +147,8 @@ const handleChange = (event) => {
                                 .groupBy(`${groupingVar}`)
                                 .mapValues(entries => _.sumBy(entries, 'amountInBAM'))
                                 .toPairs()
-                                .value()[0][1] ? 'red' : 'black'
+                                .value()[0][1] ? 'red' : 'black' : 
+                                'Loading'
                                 }}>
                     <span style={{color:'black', fontWeight:'bold'}}>Total Balance </span>
                     <br />
