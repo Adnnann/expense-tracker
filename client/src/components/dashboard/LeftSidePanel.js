@@ -5,7 +5,7 @@ import { Box } from "@mui/material";
 import Typography from "@material-ui/core/Typography"
 import Button from '@material-ui/core/Button'
 import ButtonGroup from '@mui/material/ButtonGroup';
-import { makeStyles } from "@material-ui/core"
+import { Divider, makeStyles } from "@material-ui/core"
 import PieChart from "./PieChart";
 import { useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -232,32 +232,39 @@ const year = () => {
                   >
                     Transactions
                 </Button>
-                    <StyledMenu
-                      id="demo-customized-menu"
-                      MenuListProps={{
-                      'aria-labelledby': 'demo-customized-button',
-                      }}
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                    >
-                    <MenuItem onClick={dailyData} disableRipple>
+               
+                       <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={open}
+                onClose={handleClose}
+                >
+                    <MenuItem onClick={dailyData} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                          Daily
                     </MenuItem>
-
-                    <MenuItem onClick={weeklyData} disableRipple>
+                      <Divider />
+                    <MenuItem onClick={weeklyData} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                          Weekly
                     </MenuItem>
-
-                    <MenuItem onClick={monthlyData} disableRipple>
+                    <Divider />
+                    <MenuItem onClick={monthlyData} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                         Monthly
                     </MenuItem>
-
-                    <MenuItem onClick={annualData} disableRipple>
+                    <Divider />
+                    <MenuItem onClick={annualData} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                         Yearly
                     </MenuItem>
                     
-                </StyledMenu>
+                    </Menu>
                 </div>
                 </>
 
@@ -274,31 +281,37 @@ const year = () => {
                   >
                     Statistics
                 </Button>
-                    <StyledMenu
-                      id="demo-customized"
-                      MenuListProps={{
-                      'aria-labelledby': 'demo-customized',
-                      }}
-                      anchorEl={anchorElStatistics}
+                <Menu
+                id="menu-appbar"
+            
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                anchorEl={anchorElStatistics}
                       open={openStatistics}
-                      onClose={handleCloseStatistics}
-                    >
-                
+                onClose={handleCloseStatistics}>
+                  
 
-                    <MenuItem onClick={week} disableRipple>
+                    <MenuItem onClick={week} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                          Week
                     </MenuItem>
-
-                    <MenuItem onClick={month} disableRipple>
+                    <Divider />
+                    <MenuItem onClick={month} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                         Month
                     </MenuItem>
-
-                    <MenuItem onClick={year} disableRipple>
+                    <Divider />
+                    <MenuItem onClick={year} disableRipple style={{marginLeft:'5px', marginRight:'5px'}}>
                         Year
                     </MenuItem>
                   
                     
-                </StyledMenu>
+                    </Menu>
                 </div>
                 </>
         

@@ -9,57 +9,18 @@ import {signoutUser,
         getUserDataToDisplay} from "../../features/usersSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { Typography } from "@mui/material";
+import { ButtonGroup, Divider, Typography } from "@mui/material";
 import { makeStyles } from "@material-ui/core";
 import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import dateFormat from "dateformat";
-import { styled, alpha } from '@mui/material/styles';
+
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import { useState } from "react";
-import Container from '@mui/material/Container';
 
 
-const StyledMenu = styled((props) => (
-    <Menu
-      elevation={0}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      {...props}
-    />
-  ))(({ theme }) => ({
-    '& .MuiPaper-root': {
-      marginTop: theme.spacing(1),
-      minWidth: 180,
-      color:
-        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-      boxShadow:
-        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-      '& .MuiMenu-list': {
-        padding: '4px 0',
-      },
-      '& .MuiMenuItem-root': {
-        '& .MuiSvgIcon-root': {
-          fontSize: 18,
-          color: theme.palette.text.secondary,
-          marginRight: theme.spacing(1.5),
-        },
-        '&:active': {
-          backgroundColor: alpha(
-            theme.palette.primary.main,
-            theme.palette.action.selectedOpacity,
-          ),
-        },
-      },
-    },
-  }));
+
 
 const useStyles = makeStyles(theme=>({
     card: {
@@ -166,12 +127,12 @@ const Header = () => {
     };
     return(
         
-    <AppBar position="static" >
-   <Container maxWidth="xl">
-       
-     
+  <AppBar position="static" >
+ 
+  
+
         <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}></Box>
+ 
             <Box
                 component="img"
                 sx={{
@@ -195,11 +156,16 @@ const Header = () => {
                 Personal Expense Tracker and Analyst
                  
             </Typography>
+            <br />
+
+   
+        
             {
               window.location.pathname === '/signup' ||  window.location.pathname === '/' ?
 
             null 
-            : <><div style={{marginLeft:"auto"}}>
+            :  <ButtonGroup style={{marginLeft:'auto'}}>
+            <div>
                 <Button
                     style={{textTransform:'none'}}
                     id="demo-customized-button"
@@ -215,64 +181,64 @@ const Header = () => {
                 </Button>
 
                 <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-               <MenuItem onClick={editProfile}>
-               <Typography textAlign="center">  Edit Profile</Typography>
-                    </MenuItem>
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}>
 
+                    <MenuItem onClick={editProfile} disableRipple>
+                      <Typography textAlign="center" style={{marginLeft:'5px', marginRight:'5px'}}>  Edit Profile</Typography>
+                    </MenuItem>
+                      <Divider />
                     <MenuItem onClick={editPassword} disableRipple>
-                    <Typography textAlign="center">New Password</Typography>
+                      <Typography textAlign="center" style={{marginLeft:'5px', marginRight:'5px'}}>New Password</Typography>
                     </MenuItem>
-
+                    <Divider />
                     <MenuItem onClick={deleteAccount} disableRipple>
-                    <Typography textAlign="center"> Delete Account</Typography>
-                       
+                      <Typography textAlign="center" style={{marginLeft:'5px', marginRight:'5px'}}> Delete Account</Typography> 
                     </MenuItem>
             </Menu>
-              
+            </div>
                    
-                    
+           <Button variant="primary" onClick={signout} style={{textTransform:'none'}}>Signout</Button>   
+   
+     
         
-              </div>
-            <Button variant="primary" onClick={signout} style={{textTransform:'none'}}>Signout</Button></>
+           </ButtonGroup>
+            
             
         }
+     
 
+
+        </Toolbar>
+     
         { 
                 Object.keys(displayUserName).length !== 0 ?
-                    <Typography variant="h6" className={classes.welcomeMessage}>
-                       {dateFormat(date, 'dddd, dd mmmm')}
-                        <br />
-                        Hello, {
-                         displayUserName.user.firstName}
+               <span style={{display:'block',marginLeft:'10px'}}>
+               
+               <Typography variant="h6" >
+                    
+                
+                        Hello, {displayUserName.user.firstName}
                     </Typography>
+                    <Typography component='p' style={{fontSize:'10px'}}>
+                        {dateFormat(date, 'dddd, dd mmmm')}
+                    </Typography>
+                    </span>
                 : null
         }
 
-        </Toolbar>
-</Container>
-
-    </AppBar>
-    )
-
-
-}
+</AppBar>)}
     
 
 export default Header
