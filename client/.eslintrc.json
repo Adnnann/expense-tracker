@@ -1,0 +1,22 @@
+{
+    "extends": ["prettier"],
+    "plugins": ["prettier"],
+ "root": true,
+    "rules": {
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "no-unused-vars": "warn",
+        "react/jsx-curly-brace-presence":"warn",
+        "react/prop-types" : "off",
+        "react/react-in-jsx-scope": "warn",
+        "no-use-before-define": "off",
+        "react/no-array-index-key": "warn",
+        "no-param-reassign": "warn",
+        "no-nested-ternary": "warn",
+        "import/prefer-default-export": "off",
+      "prettier/prettier": ["warn", {
+        "singleQuote": true,
+        "trailingComma": "es5"
+     
+      }]
+    }
+  }

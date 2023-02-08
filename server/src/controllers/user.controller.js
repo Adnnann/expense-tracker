@@ -1,7 +1,7 @@
 import User from '../models/user.model'
 import _ from 'lodash'
 import errorHandler from './helpers/dbErrorHandlers'
-
+import jwtDecode from 'jwt-decode'
 
   const create = (req, res, next) => {
 
@@ -27,10 +27,11 @@ const update = (req, res, next) => {
 
     user.updated = Date.now()
     user.save(err=>{
+         
         if(err){
             return res.send({error: errorHandler.getErrorMessage(err)})
         }
-        res.send({message: 'Data updated'})
+        return res.send({message: 'Data updated', user: user})
     })
 }
 
@@ -54,10 +55,26 @@ const userByID = (req, res, next, id) => {
     })
 }
 
+const reloginUser = (req, res) => {
+
+    const id = jwtDecode(req.body.token)._id
+
+    User.findOne({'_id': id},(err, user) => {
+      
+        if(err || !user){       
+            return res.send({error: 'User not found'})
+        }
+     
+            return res.send({message:user})
+    })
+       
+}
+
 export default {
     create,
     read, 
     update,
     remove,
+    reloginUser,
     userByID
 }

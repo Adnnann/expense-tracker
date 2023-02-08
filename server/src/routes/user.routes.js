@@ -23,6 +23,10 @@ router.route('/api/users/:userId')
 .put(userCtrl.update)
 .delete(userCtrl.remove)
 
+router.route('/api/users/relogin')
+.post(userCtrl.reloginUser)
+
+
 router.param('userId', userCtrl.userByID)
 
 export default router

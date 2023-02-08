@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import Icon from "@material-ui/core/Icon";
-import { makeStyles } from "@material-ui/core";
+import React, { useState } from 'react';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Icon from '@material-ui/core/Icon';
+import { makeStyles } from '@material-ui/core';
 import {
   signinUser,
   getUserSigninData,
@@ -16,21 +16,21 @@ import {
   userDataToDisplay,
   cleanUserData,
   cleanRegisteredUserData,
-} from "../features/usersSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
-import { useEffect } from "react";
+} from '../features/usersSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
-    margin: "auto",
-    textAlign: "center",
+    margin: 'auto',
+    textAlign: 'center',
     marginTop: theme.spacing(5),
     paddingBottom: theme.spacing(2),
   },
   error: {
-    verticalAlign: "middle",
+    verticalAlign: 'middle',
   },
   title: {
     marginTop: theme.spacing(2),
@@ -42,16 +42,16 @@ const useStyles = makeStyles((theme) => ({
     width: 300,
   },
   submit: {
-    margin: "auto",
+    margin: 'auto',
     marginBottom: theme.spacing(2),
   },
   noaccount: {
-    margin: "auto",
+    margin: 'auto',
     marginBottom: theme.spacing(1),
-    marginRight: "0",
+    marginRight: '0',
   },
   signup: {
-    margin: "auto",
+    margin: 'auto',
     marginBottom: theme.spacing(1),
   },
 }));
@@ -63,17 +63,16 @@ const Signin = () => {
   const navigate = useNavigate();
   const token = useSelector(getUserToken);
   const [values, setValues] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   //if user has token (is logged) redirected to protected page
   useEffect(() => {
-    if (userSigninData.hasOwnProperty("token")) {
+    if (userSigninData.hasOwnProperty('token')) {
       dispatch(fetchUserTransactions());
-      dispatch(userDataToDisplay({ user: userSigninData.user }));
       dispatch(userToken());
-      navigate("/dashboard");
+      navigate('/dashboard');
     }
   }, [userSigninData]);
 
@@ -93,42 +92,42 @@ const Signin = () => {
 
   const redirectToSignup = () => {
     dispatch(cleanRegisteredUserData());
-    navigate("/signup");
+    navigate('/signup');
   };
 
   return (
     <Card className={classes.card}>
       <CardContent>
-        <Typography variant="h6" className={classes.tittle}>
+        <Typography variant='h6' className={classes.tittle}>
           Sign In
         </Typography>
 
         <TextField
-          id="email"
-          type="email"
-          label="Email"
+          id='email'
+          type='email'
+          label='Email'
           className={classes.textField}
           value={values.email}
-          onChange={handleChange("email")}
-          margin="normal"
+          onChange={handleChange('email')}
+          margin='normal'
         />
         <br />
 
         <TextField
-          id="password"
-          type="password"
-          label="Password"
+          id='password'
+          type='password'
+          label='Password'
           className={classes.textField}
           value={values.password}
-          onChange={handleChange("password")}
-          margin="normal"
+          onChange={handleChange('password')}
+          margin='normal'
         />
         <br />
         {
           //display error returned from server
           Object.keys(userSigninData).length !== 0 && (
-            <Typography component="p" color="error">
-              <Icon color="error" className={classes.error}></Icon>
+            <Typography component='p' color='error'>
+              <Icon color='error' className={classes.error}></Icon>
               {userSigninData.error}
             </Typography>
           )
@@ -137,8 +136,8 @@ const Signin = () => {
 
       <CardActions>
         <Button
-          color="primary"
-          variant="contained"
+          color='primary'
+          variant='contained'
           onClick={clickSubmit}
           className={classes.submit}
         >
@@ -147,13 +146,13 @@ const Signin = () => {
       </CardActions>
 
       <CardActions>
-        <Typography component="p" className={classes.noaccount}>
+        <Typography component='p' className={classes.noaccount}>
           No account?
         </Typography>
 
         <Typography
-          component="p"
-          color="primary"
+          component='p'
+          color='primary'
           className={classes.signup}
           onClick={redirectToSignup}
         >
