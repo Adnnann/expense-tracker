@@ -96,7 +96,6 @@ const EditProfile = () => {
     });
 
     if (updatedUserData.hasOwnProperty('message')) {
-    
       dispatch(cleanUpdatedUserData());
       navigate('/dashboard');
     }

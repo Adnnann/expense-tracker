@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
 import transactionRoutes from './routes/transaction.routes'
+import exchangeRatesRoutes from './routes/exchangeRates.routes.js'
 import passport from 'passport';
 import cookieParser from 'cookie-parser'
 
@@ -22,10 +23,15 @@ app.use(cookieParser())
 app.use('/', authRoutes)
 app.use('/', userRoutes)
 app.use('/', transactionRoutes)
+app.use('/', exchangeRatesRoutes)
+
+app.use('*', (req, res) => {
+    return res.send({error: 'Page not found'})
+})
 
 app.use((err, req, res, next) => {
     if(err.name === 'UnauthorizedError'){
-        res.status(401).json({error: `${err.name} : ${err.message}`})
+        return res.status(401).json({error: `${err.name} : ${err.message}`})
     }
 })
 

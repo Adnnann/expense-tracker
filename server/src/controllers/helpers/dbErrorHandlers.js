@@ -27,9 +27,6 @@ const getErrorMessage = err => {
             if(err.errors[errName].message) message = err.errors[errName].message
         }
     }
-    // if(message.includes('Error, expected \`_id\` to be unique')){
-    //     return message = false
-    // }
     return message
 }
 

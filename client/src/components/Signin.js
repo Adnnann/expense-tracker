@@ -16,6 +16,7 @@ import {
   userDataToDisplay,
   cleanUserData,
   cleanRegisteredUserData,
+  fetchCurrencyExchangeRates,
 } from '../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -78,6 +79,7 @@ const Signin = () => {
 
   // send request to server to login user and in case there are errors collect error
   const clickSubmit = () => {
+    dispatch(fetchUserTransactions());
     const user = {
       email: values.email || undefined,
       password: values.password || undefined,

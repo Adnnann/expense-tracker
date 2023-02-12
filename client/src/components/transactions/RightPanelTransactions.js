@@ -28,7 +28,7 @@ const RightPanelTransactions = () => {
   const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
   const groupingVar = useSelector(getGroupingVar);
   const navigate = useNavigate();
-   
+
   //define table columns
   const columns = [
     {
@@ -98,7 +98,6 @@ const RightPanelTransactions = () => {
     dispatch(setDeleteId(id));
     dispatch(setOpenDeleteModal(true));
   };
-   
 
   if (Object.keys(userTransactions).length !== 0) {
     //use dateDiff on returned date values from database

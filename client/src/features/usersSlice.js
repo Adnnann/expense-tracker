@@ -1,5 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+
+const apiKey = process.env.REACT_APP_KEY;
 export const createUser = createAsyncThunk('user/registeredUser', async (user) => {
   return await axios
     .post(`api/users/`, user, {
@@ -176,6 +178,54 @@ export const reloginUser = createAsyncThunk('users/loggedUser', async (id) => {
     .catch((error) => error);
 });
 
+//obtain currency exchange rate
+export const fetchCurrencyExchangeRates = createAsyncThunk(
+  'users/currencyExchangeRates',
+  async () => {
+    const requests = [
+      'https://api.api-ninjas.com/v1/convertcurrency?want=USD&have=BAM&amount=1',
+      'https://api.api-ninjas.com/v1/convertcurrency?want=EUR&have=BAM&amount=1',
+      '/api/exchangeRates'
+    ];
+
+    return await axios
+      .all([axios.get(requests[0]), axios.get(requests[1])])
+      .then(
+        axios.spread((res1, res2) => [{ USD: res1.data.new_amount, EUR: res2.data.new_amount }]),
+      )
+      .catch((errors) => {
+        console.log(errors);
+      });
+  },
+);
+
+export const fetchSavedExchangeRatesFromDB = createAsyncThunk(
+  'users/exchangeRatesFromDB',
+  async () => {
+    return await axios
+      .get(`/api/exchangeRates`, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((response) => response.data)
+      .catch((error) => error);
+  },
+);
+
+export const saveExchangeRatesInDB = createAsyncThunk('users/saveExchangeRates', async (rates) => {
+  return await axios
+    .post(`/api/exchangeRates`, rates, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => response.data)
+    .catch((error) => error);
+});
+
 const initialState = {
   userData: {},
   updatedUserData: {},
@@ -187,6 +237,8 @@ const initialState = {
   closeAccount: {},
   passwordCheck: {},
   deleteAccountModal: true,
+  savedExchangeRates: {},
+  exchangeRatesFromDB: {},
 
   //TRANACTIONS
   userTransactions: {},
@@ -207,6 +259,7 @@ const initialState = {
   groupingVarForCharts: 'day',
   chartType: 'pie',
   statisticsOverviewLevel: 'Week',
+  currencyExchangeRates: {},
 };
 
 export const usersSlice = createSlice({
@@ -292,14 +345,10 @@ export const usersSlice = createSlice({
       return { ...state, userToken: payload };
     },
     [fetchUserData.fulfilled]: (state, { payload }) => {
-      return { ...state, 
-        userData: payload };
+      return { ...state, userData: payload };
     },
     [updateUserData.fulfilled]: (state, { payload }) => {
-       
-      return { ...state, 
-        updatedUserData: payload, 
-        userDataToDisplay: payload.user };
+      return { ...state, updatedUserData: payload, userDataToDisplay: payload.user };
     },
     [closeAccount.fulfilled]: (state, { payload }) => {
       return { ...state, closeAccount: payload };
@@ -329,6 +378,15 @@ export const usersSlice = createSlice({
     [reloginUser.fulfilled]: (state, { payload }) => {
       return { ...state, loggedUser: payload, userDataToDisplay: payload.message };
     },
+    [fetchCurrencyExchangeRates.fulfilled]: (state, { payload }) => {
+      return { ...state, currencyExchangeRates: payload };
+    },
+    [saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
+      return { ...state, savedExchangeRates: payload };
+    },
+    [fetchSavedExchangeRatesFromDB.fulfilled]: (state, { payload }) => {
+      return { ...state, exchangeRatesFromDB: payload };
+    },
   },
 });
 
@@ -342,6 +400,7 @@ export const getCloseAccountData = (state) => state.users.closeAccount;
 export const getPasswordCheckData = (state) => state.users.passwordCheck;
 export const getUserDataToDisplay = (state) => state.users.userDataToDisplay;
 export const getDeleteAccountModal = (state) => state.users.deleteAccountModal;
+export const getCurrencyExchangeRates = (state) => state.users.currencyExchangeRates;
 ///
 export const getUserTransactions = (state) => state.users.userTransactions;
 export const getDashboardData = (state) => state.users.dashboardData;
@@ -362,6 +421,8 @@ export const getFilterVarForCharts = (state) => state.users.filterVarForCharts;
 export const getGroupingVarForCharts = (state) => state.users.groupingVarForCharts;
 export const getChartType = (state) => state.users.chartType;
 export const getStatisticsOverviewLevel = (state) => state.users.statisticsOverviewLevel;
+export const getSavedExchangeRates = (state) => state.users.savedExchangeRates;
+export const getExchangeRatesFromDB = (state) => state.users.exchangeRatesFromDB;
 
 export const {
   userDataToDisplay,

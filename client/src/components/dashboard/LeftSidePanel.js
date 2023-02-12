@@ -21,6 +21,7 @@ import {
   setTransactionsOverviewLevel,
   getCurrency,
   setCurrency,
+  getCurrencyExchangeRates,
 } from '../../features/usersSlice';
 import _ from 'lodash';
 import { useNavigate } from 'react-router';
@@ -84,6 +85,10 @@ const LeftSideDashboard = () => {
   const currency = useSelector(getCurrency);
   const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
 
+  const currencyExchangeRatesForEURandUSD = useSelector(getCurrencyExchangeRates)
+
+
+
   //manage dropdown menus in selection panel for transactions
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -117,10 +122,10 @@ const LeftSideDashboard = () => {
         dispatch(setCurrencyExchangeRate(1));
         break;
       case 'USD':
-        dispatch(setCurrencyExchangeRate(0.58));
+        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].USD));
         break;
       case 'EUR':
-        dispatch(setCurrencyExchangeRate(0.51));
+        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].EUR));
         break;
     }
   };
@@ -469,7 +474,7 @@ const LeftSideDashboard = () => {
                           )
                             .sumBy('amountInBAM')
                             .value() *
-                            currencyExchangeRate -
+                            currencyExchangeRate.BAM -
                           _.chain(
                             Object.values(userTransactions.transactions).filter(
                               (item) => item.type === 'expense',

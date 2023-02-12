@@ -6,7 +6,7 @@ import config from '../config/config'
 const signin = (req, res) => {
     User.findOne({'email': req.body.email},(err, user) => {
         if(err || !user){
-            return res.send({error: 'User not found'})
+            return res.send({error: req.cookies})
         }
         if(!user.authenticate(req.body.password)){
             return res.send({error: 'Email and password do not match'})
@@ -40,9 +40,9 @@ const requireSignin = expressjwt({
 })
 
 const hasAuthorization = (req, res, next) => {
-    const authorized = req.profile && req.auth && req.profile._id == req.auth._id
-    if(!authorized) return res.status(403).json('User is not authorized!')
-    next()
+    if(!req.cookies.userJwtToken){
+      return res.send({error:'User not authorized!'})
+    }
 }
 
 export default {signin, signout, hasAuthorization, requireSignin}

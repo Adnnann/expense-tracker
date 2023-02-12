@@ -12,6 +12,11 @@ import {
   getUserToken,
   fetchUserTransactionData,
   fetchUserTransactions,
+  fetchCurrencyExchangeRates,
+  getCurrencyExchangeRates,
+  getSavedExchangeRates,
+  fetchSavedExchangeRatesFromDB,
+  saveExchangeRatesInDB,
 } from '../../features/usersSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -83,22 +88,39 @@ const Header = () => {
   const loggedUser = useSelector(getUserSigninData);
   const userToken = useSelector(getUserToken);
   const userDisplayData = useSelector(getUserDataToDisplay);
+  const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
+  const savedExchangeRates = useSelector(getSavedExchangeRates);
+
 
   useEffect(() => {
     if (Object.values(loggedUser).length === 0 && userToken?.message && !loggedUser?.error) {
       dispatch(reloginUser(userToken.message));
       dispatch(fetchUserTransactions());
     }
-  }, [loggedUser.user, userToken, userDisplayData]);
+
+    if (Object.keys(currencyExchangeRates).length === 0) {
+      dispatch(fetchCurrencyExchangeRates());
+    }
+console.log(Object.values(savedExchangeRates).length)
+    if(Object.values(currencyExchangeRates).length > 0
+    && Object.values(savedExchangeRates).length === 0
+    ){
+        dispatch(saveExchangeRatesInDB({rates:{
+          USD:currencyExchangeRates[0].USD,
+          EUR:currencyExchangeRates[0].EUR
+        }}))
+
+    }
+
+  }, [loggedUser.user, userToken, userDisplayData, currencyExchangeRates,savedExchangeRates, savedExchangeRates]);
 
   const open = Boolean(anchorEl);
 
   // const handleClick = (event) => {
   //   setAnchorEl(event.currentTarget);
   // };
- 
+
   const editProfile = () => {
-     
     navigate(`editProfile/${userData._id}`);
   };
 

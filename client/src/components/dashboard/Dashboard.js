@@ -5,6 +5,7 @@ import {
   signoutUser,
   getUserTransactions,
   getFilter,
+  cleanStore,
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -64,8 +65,8 @@ const Dashboard = () => {
 
   const redirectTosignin = () => {
     navigate('/');
-    signoutUser();
-    window.location.reload();
+    dispatch(signoutUser());
+    dispatch(cleanStore())
   };
 
   return (
@@ -76,9 +77,9 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={8} lg={6} xl={6}>
-          {/* <div style={{marginTop:'70px'}}> */}
+     
           {Object.keys(userTransactions).length !== 0 ? <RightSidePanel /> : 'Loading...'}
-          {/* </div> */}
+  
         </Grid>
       </Grid>
       {

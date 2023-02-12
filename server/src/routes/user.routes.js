@@ -1,6 +1,7 @@
 import express from 'express'
 import userCtrl from '../controllers/user.controller'
 import passport from 'passport'
+import authCtrl from '../controllers/auth.controller'
 require('../middleware/passport')
 
 const router = express.Router()
@@ -16,12 +17,12 @@ router.get('/protected', passport.authenticate('jwt', { session: false }),
 )
 
 router.route('/api/users/')
-.post(userCtrl.create)
+.post(authCtrl.hasAuthorization, userCtrl.create)
 
 router.route('/api/users/:userId')
-.get(userCtrl.read)
-.put(userCtrl.update)
-.delete(userCtrl.remove)
+.get(authCtrl.hasAuthorization, userCtrl.read)
+.put(authCtrl.hasAuthorization, userCtrl.update)
+.delete(authCtrl.hasAuthorization, userCtrl.remove)
 
 router.route('/api/users/relogin')
 .post(userCtrl.reloginUser)

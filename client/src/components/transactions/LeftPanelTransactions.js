@@ -11,6 +11,7 @@ import {
   getGroupingVar,
   getCurrency,
   setCurrency,
+  getCurrencyExchangeRates,
 } from '../../features/usersSlice';
 import { DateTime } from 'luxon';
 import date from 'date-and-time';
@@ -23,6 +24,7 @@ const LeftPanelTransactions = () => {
   const currency = useSelector(getCurrency);
   const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
   const groupingVar = useSelector(getGroupingVar);
+  const currencyExchangeRatesForEURandUSD = useSelector(getCurrencyExchangeRates)
 
   const intToString = (num) => {
     num = num.toString().replace(/[^0-9.]/g, '');
@@ -53,10 +55,10 @@ const LeftPanelTransactions = () => {
         dispatch(setCurrencyExchangeRate(1));
         break;
       case 'USD':
-        dispatch(setCurrencyExchangeRate(0.58));
+        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].USD));
         break;
       case 'EUR':
-        dispatch(setCurrencyExchangeRate(0.51));
+        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].EUR));
         break;
     }
   };
