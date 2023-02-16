@@ -291,7 +291,7 @@ const LeftSideDashboard = () => {
           </>
         </ButtonGroup>
       </>
-      {Object.keys(userTransactions).length !== 0 ? (
+      {userTransactions?.transactions && userTransactions.transactions.length > 0 && (
         <>
           <Typography variant='h6' style={{ marginBottom: '0' }}>
             Total Balance
@@ -536,13 +536,17 @@ const LeftSideDashboard = () => {
             }
           />
         </>
-      ) : (
-        //instruct user to go to tab transactions to start adding incomes and expenses in order to get the report
-        <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
+      ) }
+
+      {userTransactions?.transactions && userTransactions.transactions.length > 0 && (
+ //instruct user to go to tab transactions to start adding incomes and expenses in order to get the report
+ <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
           Click on the tab transactions and start adding incomes or expenses to generate dashboard
           data
         </Typography>
       )}
+       
+      
     </Box>
   );
 };

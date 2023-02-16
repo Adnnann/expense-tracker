@@ -73,7 +73,7 @@ const RightSidePanel = () => {
     return (num / si[index].v).toFixed(2).replace(/\.0+$|(\.[0-9]*[1-9])0+$/, '$1') + si[index].s;
   };
 
-  userTransactions.transactions
+  userTransactions?.transactions ? userTransactions.transactions
     .filter(
       (item) => new Date(item.created) > new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000),
     )
@@ -98,7 +98,7 @@ const RightSidePanel = () => {
       );
       // generate rows
       return rows.push(createData(firstRow, secondRow));
-    });
+    }) :null;
 
   return (
     <Paper
@@ -110,7 +110,7 @@ const RightSidePanel = () => {
         marginTop: '20px',
       }}
     >
-      {Object.keys(userTransactions).length !== 0 ? (
+      {userTransactions?.transactions && userTransactions.transactions.length > 0 ? (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -153,9 +153,7 @@ const RightSidePanel = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      ) : (
-        ''
-      )}
+      ) : null}
     </Paper>
   );
 };

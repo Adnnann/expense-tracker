@@ -17,6 +17,7 @@ import {
   getSavedExchangeRates,
   fetchSavedExchangeRatesFromDB,
   saveExchangeRatesInDB,
+  getUserData,
 } from '../../features/usersSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -30,6 +31,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import { useState } from 'react';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
+import { getUserTransactions } from '../../features/transactionsSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -96,6 +98,7 @@ const Header = () => {
     if (Object.values(loggedUser).length === 0 && userToken?.message && !loggedUser?.error) {
       dispatch(reloginUser(userToken.message));
       dispatch(fetchUserTransactions());
+      dispatch(getUserTransactions());
     }
 
     if (Object.keys(currencyExchangeRates).length === 0) {

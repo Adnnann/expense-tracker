@@ -25,7 +25,7 @@ const getTransactions = (req, res) => {
         if(err){
             return res.send({error:dbErrorHandlers.getErrorMessage(err)})
         }
-        res.send({transactions:transactions})
+        res.send({message:transactions})
     })
 }
 

@@ -3,7 +3,6 @@ import {
   getUserToken,
   userToken,
   signoutUser,
-  getUserTransactions,
   getFilter,
   cleanStore,
 } from '../../features/usersSlice';
@@ -19,6 +18,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import LeftSidePanel from './LeftSidePanel';
 import RightSidePanel from './RightSidePanel';
+import Loader from '../utils/Loader';
+import { getUserTransactions } from '../../features/transactionsSlice';
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -70,7 +71,7 @@ const Dashboard = () => {
   };
 
   return (
-    <>
+  
       <Grid container justifyContent='center'>
         <Grid item xs={12} md={4} lg={4} xl={4}>
           <LeftSidePanel />
@@ -78,15 +79,10 @@ const Dashboard = () => {
 
         <Grid item xs={12} md={8} lg={6} xl={6}>
      
-          {Object.keys(userTransactions).length !== 0 ? <RightSidePanel /> : 'Loading...'}
+         <RightSidePanel /> 
   
         </Grid>
-      </Grid>
-      {
-        //display modal window if no activity is recorded in period of 20 min
-      }
-
-      <Dialog open={inactiveUser}>
+        <Dialog open={inactiveUser}>
         <DialogTitle>Session expired</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -101,7 +97,11 @@ const Dashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+      </Grid>
+
+
+     
+
   );
 };
 export default Dashboard;

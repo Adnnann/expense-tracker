@@ -360,8 +360,30 @@ export const usersSlice = createSlice({
       return { ...state, updatedUserData: payload };
     },
     // TRANSACTIONS
+    [fetchUserTransactions.pending]: (state, { payload }) => {
+      return { ...state, 
+        userTransactions: {
+          status: 'loading',
+          error: false,
+          payload: null,
+
+        }};
+    },
     [fetchUserTransactions.fulfilled]: (state, { payload }) => {
-      return { ...state, userTransactions: payload };
+      return { ...state, 
+        userTransactions: {
+          status: 'success',
+          error: false,
+          payload: payload.message,
+        }};
+    },
+    [fetchUserTransactions.rejected]: (state, { payload }) => {
+      return { ...state, 
+        userTransactions: {
+          status: 'error',
+          error: true,
+          payload: payload.error,
+        }};
     },
     [createTransaction.fulfilled]: (state, { payload }) => {
       return { ...state, addTransaction: payload };
