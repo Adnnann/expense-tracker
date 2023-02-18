@@ -12,9 +12,6 @@ import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import {
-  createTransaction,
-  getTransactionData,
-  fetchUserTransactions,
   userToken,
   getUserToken,
   cleanTransactionData,
@@ -23,7 +20,8 @@ import jwtDecode from 'jwt-decode';
 import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-
+import { fetchUserTransactions } from '../../features/transactionsSlice';
+import { createTransaction, getTransactionData } from '../../features/transactionsSlice';
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,

@@ -1,6 +1,3 @@
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
 import { Box } from '@mui/material';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -10,62 +7,33 @@ import PieChart from './PieChart';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getFilter,
-  getUserTransactions,
-  getCurrencyExchangeRate,
-  setCurrencyExchangeRate,
   setFilterVarForCharts,
   setGroupingVarForCharts,
   setStatisticsOverviewLevel,
   setGroupingVar,
-  setTransactionsOverviewLevel,
-  getCurrency,
-  setCurrency,
-  getCurrencyExchangeRates,
+  
 } from '../../features/usersSlice';
 import _ from 'lodash';
 import { useNavigate } from 'react-router';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { styled, alpha } from '@mui/material/styles';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
+import {
+  getCurrencyExchangeRates,
+  getSelectedExchangeRate,
+  setSelectedExchangeRate,
+  
+} from '../../features/exchangeRatesSlice';
+import { 
+  getUserTransactions,
+  getFilter, 
+  setTransactionsOverviewLevel,
+} from '../../features/transactionsSlice';
+import LeftSidePanelData from './LeftSidePanelData';
+import SelectCurrency from './SelectCurrency';
+import { 
+  calculateIncomesAndExpenses 
+} from '../utils/functions/HelperFunctions';
 
-const StyledMenu = styled((props) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'right',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    {...props}
-  />
-))(({ theme }) => ({
-  '& .MuiPaper-root': {
-    marginTop: theme.spacing(1),
-    minWidth: 180,
-    color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-    boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-    '& .MuiMenu-list': {
-      padding: '4px 0',
-    },
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
-      },
-      '&:active': {
-        backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-      },
-    },
-  },
-}));
+
 
 const useStyles = makeStyles((theme) => ({
   buttonGroup: {
@@ -78,17 +46,13 @@ const useStyles = makeStyles((theme) => ({
 
 const LeftSideDashboard = () => {
   const classes = useStyles();
-  const userTransactions = useSelector(getUserTransactions);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const filter = useSelector(getFilter);
-  const currency = useSelector(getCurrency);
-  const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
 
-  const currencyExchangeRatesForEURandUSD = useSelector(getCurrencyExchangeRates)
-
-
-
+  const { loading, success, error, data } = useSelector(getCurrencyExchangeRates);
+  const transactions = useSelector(getUserTransactions);
+  const selectedExchangeRate = useSelector(getSelectedExchangeRate);
   //manage dropdown menus in selection panel for transactions
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -96,6 +60,8 @@ const LeftSideDashboard = () => {
   //manage dropdown menus in selection panel for statistical overview
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
+
+  const [selectedValue, setSelectedValue] = useState('BAM');
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -115,17 +81,17 @@ const LeftSideDashboard = () => {
 
   //set currency coeficient based on user input
   const handleChange = (event) => {
-    dispatch(setCurrency(event.target.value));
+    const { EUR, USD } = data[0];
 
     switch (event.target.value) {
       case 'BAM':
-        dispatch(setCurrencyExchangeRate(1));
+        dispatch(setSelectedExchangeRate(1));
         break;
       case 'USD':
-        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].USD));
+        dispatch(setSelectedExchangeRate(USD));
         break;
       case 'EUR':
-        dispatch(setCurrencyExchangeRate(currencyExchangeRatesForEURandUSD[0].EUR));
+        dispatch(setSelectedExchangeRate(EUR));
         break;
     }
   };
@@ -196,11 +162,13 @@ const LeftSideDashboard = () => {
   const year = () => {
     dispatch(setFilterVarForCharts('year'));
     dispatch(setGroupingVarForCharts('month'));
-    dispatch(setStatisticsOverviewLevel('yEAR'));
+    dispatch(setStatisticsOverviewLevel('Year'));
     navigate('/statistics');
   };
 
   const menuButtons = ['Daily', 'Weekly', 'Monthly', 'Annualy'];
+  const options = ['BAM', 'USD', 'EUR'];
+
   return (
     <Box
       sx={{
@@ -221,332 +189,80 @@ const LeftSideDashboard = () => {
           {
             //menu for transactions
           }
-          <>
-            <DropdownMenuButtons
-              buttonLabel={'Transactions'}
-              handleOpenMenuButtons={handleClick}
-              handleCloseMenuButtons={handleClose}
-              openMenuButtons={open}
-              handleClose={handleClose}
-              anchorEl={anchorEl}
-              menuButtons={menuButtons}
-              menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
-            />
-          </>
 
-          <>
-            <div style={{ marginLeft: 'auto' }}>
-              <Button
-                style={{ textTransform: 'none' }}
-                id='demo-customized-button'
-                aria-controls={openStatistics ? 'demo-customized-menu' : undefined}
-                aria-haspopup='true'
-                aria-expanded={openStatistics ? 'true' : undefined}
-                disableElevation
-                onClick={handleClickStatistics}
-                endIcon={<KeyboardArrowDownIcon />}
-              >
-                Statistics
-              </Button>
-              <Menu
-                id='menu-appbar'
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                anchorEl={anchorElStatistics}
-                open={openStatistics}
-                onClose={handleCloseStatistics}
-              >
-                <MenuItem
-                  onClick={week}
-                  disableRipple
-                  style={{ marginLeft: '5px', marginRight: '5px' }}
-                >
-                  Week
-                </MenuItem>
-                <Divider />
-                <MenuItem
-                  onClick={month}
-                  disableRipple
-                  style={{ marginLeft: '5px', marginRight: '5px' }}
-                >
-                  Month
-                </MenuItem>
-                <Divider />
-                <MenuItem
-                  onClick={year}
-                  disableRipple
-                  style={{ marginLeft: '5px', marginRight: '5px' }}
-                >
-                  Year
-                </MenuItem>
-              </Menu>
-            </div>
-          </>
+          <DropdownMenuButtons
+            buttonLabel={'Transactions'}
+            handleOpenMenuButtons={handleClick}
+            handleCloseMenuButtons={handleClose}
+            openMenuButtons={open}
+            handleClose={handleClose}
+            anchorEl={anchorEl}
+            menuButtons={menuButtons}
+            menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
+          />
+          {
+            //menu for statistics
+          }
+          <DropdownMenuButtons
+            buttonLabel={'Statistics'}
+            handleOpenMenuButtons={handleClickStatistics}
+            menuButtons={['Week', 'Month', 'Year']}
+            menuFunctions={[week, month, year]}
+            open={openStatistics}
+            handleClose={handleCloseStatistics}
+            anchorEl={anchorElStatistics}
+          />
         </ButtonGroup>
       </>
-      {userTransactions?.transactions && userTransactions.transactions.length > 0 && (
+      {transactions.success && transactions.data.length > 0 && (
         <>
           <Typography variant='h6' style={{ marginBottom: '0' }}>
             Total Balance
           </Typography>
 
           <span>
-            <div style={{ display: 'inline-flex', marginBottom: '0' }}>
-              <FormControl>
-                <InputLabel variant='standard' htmlFor='currency'>
-                  Currency
-                </InputLabel>
-                <NativeSelect
-                  inputProps={{
-                    name: 'currency',
-                    id: 'currency',
-                  }}
-                  value={currency}
-                  onChange={handleChange}
-                >
-                  <option value={'BAM'}>BAM</option>
-                  <option value={'USD'}>$</option>
-                  <option value={'EUR'}>€</option>
-                </NativeSelect>
-              </FormControl>
-            </div>
-
-            <div style={{ display: 'inline-flex' }}>
-              <Typography
-                variant='h5'
-                style={{
-                  display: 'inline-flex',
-                  marginTop: '10px',
-                  marginLeft: '5px',
-                  color:
-                    _.chain(
-                      Object.values(userTransactions.transactions).filter(
-                        (item) => item.type === 'income',
-                      ),
-                    )
-                      .isEmpty()
-                      .value() &&
-                    _.chain(
-                      Object.values(userTransactions.transactions).filter(
-                        (item) => item.type === 'expense',
-                      ),
-                    )
-                      .isEmpty()
-                      .value()
-                      ? 'black'
-                      : _.chain(
-                          Object.values(userTransactions.transactions).filter(
-                            (item) => item.type === 'income',
-                          ),
-                        )
-                          .isEmpty()
-                          .value()
-                      ? 'red'
-                      : _.chain(
-                          Object.values(userTransactions.transactions).filter(
-                            (item) => item.type === 'expense',
-                          ),
-                        )
-                          .isEmpty()
-                          .value()
-                      ? 'green'
-                      : _.chain(
-                          Object.values(userTransactions.transactions).filter(
-                            (item) => item.type === 'income',
-                          ),
-                        )
-                          .sumBy('amountInBAM')
-                          .value() <
-                        _.chain(
-                          Object.values(userTransactions.transactions).filter(
-                            (item) => item.type === 'expense',
-                          ),
-                        )
-                          .sumBy('amountInBAM')
-                          .value()
-                      ? 'red'
-                      : 'black',
-                }}
-              >
-                {
-                  //filter and sumby grouped data to get total sum of all transactions. Filter data to show only incomes or only expenses based on user input
-                  //if either expenses or incomes do not exit show data that are available (either incomes or expense)
-                  _.chain(
-                    Object.values(userTransactions.transactions).filter(
-                      (item) => item.type === 'income',
-                    ),
-                  )
-                    .isEmpty()
-                    .value() &&
-                  _.chain(
-                    Object.values(userTransactions.transactions).filter(
-                      (item) => item.type === 'expense',
-                    ),
-                  )
-                    .isEmpty()
-                    .value()
-                    ? '0'
-                    : _.chain(
-                        Object.values(userTransactions.transactions).filter(
-                          (item) => item.type === 'income',
-                        ),
-                      )
-                        .isEmpty()
-                        .value()
-                    ? `- ${intToString(
-                        (
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'expense',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() * currencyExchangeRate
-                        ).toFixed(2),
-                      )} `
-                    : _.chain(
-                        Object.values(userTransactions.transactions).filter(
-                          (item) => item.type === 'expense',
-                        ),
-                      )
-                        .isEmpty()
-                        .value()
-                    ? intToString(
-                        (
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'income',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() * currencyExchangeRate
-                        ).toFixed(2),
-                      )
-                    : //if income smaller than expense show - before the total sum
-                    _.chain(
-                        Object.values(userTransactions.transactions).filter(
-                          (item) => item.type === 'income',
-                        ),
-                      )
-                        .sumBy('amountInBAM')
-                        .value() <
-                      _.chain(
-                        Object.values(userTransactions.transactions).filter(
-                          (item) => item.type === 'expense',
-                        ),
-                      )
-                        .sumBy('amountInBAM')
-                        .value()
-                    ? `- ${intToString(
-                        (
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'income',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() *
-                            currencyExchangeRate -
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'expense',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() *
-                            currencyExchangeRate
-                        ).toFixed(2),
-                      )}`
-                    : // If incomes higher than expenses just subtract expenses from incomes
-                      intToString(
-                        (
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'income',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() *
-                            currencyExchangeRate.BAM -
-                          _.chain(
-                            Object.values(userTransactions.transactions).filter(
-                              (item) => item.type === 'expense',
-                            ),
-                          )
-                            .sumBy('amountInBAM')
-                            .value() *
-                            currencyExchangeRate
-                        ).toFixed(2),
-                      )
-                }
-              </Typography>
-            </div>
+            {transactions.success && transactions.data.length > 0 && (
+              <SelectCurrency
+                options={options}
+                currency={selectedValue}
+                handleChange={handleChange}
+              />
+            )}
+            <LeftSidePanelData
+              data={transactions.data}
+              intToString={intToString}
+              selectedExchangeRate={selectedExchangeRate}
+            />
           </span>
 
           <PieChart
             //group and summarize data to get expenses and incomes
-            income={
-              _.chain(
-                Object.values(userTransactions.transactions).filter(
-                  (item) => item.type === filter.income || item.type === filter.expense,
-                ),
-              )
-                .groupBy('type')
-                .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                .value().income
-                ? (
-                    _.chain(
-                      Object.values(userTransactions.transactions).filter(
-                        (item) => item.type === filter.income || item.type === filter.expense,
-                      ),
-                    )
-                      .groupBy('type')
-                      .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                      .value().income * currencyExchangeRate
-                  ).toFixed(2)
-                : ''
-            }
+            income={calculateIncomesAndExpenses(transactions.data, 'income', null)}
             expense={
-              _.chain(
-                Object.values(userTransactions.transactions).filter(
-                  (item) => item.type === filter.income || item.type === filter.expense,
-                ),
-              )
-                .groupBy('type')
-                .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                .value().expense
-                ? (
-                    _.chain(
-                      Object.values(userTransactions.transactions).filter(
-                        (item) => item.type === filter.income || item.type === filter.expense,
-                      ),
-                    )
-                      .groupBy('type')
-                      .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                      .value().expense * currencyExchangeRate
-                  ).toFixed(2)
-                : ''
+              calculateIncomesAndExpenses(transactions.data, 'expense', null)
+              // _.chain(transactions.data.filter((item) => item.type === 'expense'))
+              //   .groupBy('type')
+              //   .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
+              //   .value().expense
+              //   ? (
+              //       _.chain(transactions.data.filter((item) => item.type === 'expense'))
+              //         .groupBy('type')
+              //         .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
+              //         .value().expense * selectedExchangeRate
+              //     ).toFixed(2)
+              //   : ''
             }
           />
         </>
-      ) }
+      )}
 
-      {userTransactions?.transactions && userTransactions.transactions.length > 0 && (
- //instruct user to go to tab transactions to start adding incomes and expenses in order to get the report
- <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
+      {success && data.length === 0 && (
+        //instruct user to go to tab transactions to start adding incomes and expenses in order to get the report
+        <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
           Click on the tab transactions and start adding incomes or expenses to generate dashboard
           data
         </Typography>
       )}
-       
-      
     </Box>
   );
 };

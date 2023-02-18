@@ -9,8 +9,6 @@ import TableRow from '@mui/material/TableRow';
 import date from 'date-and-time';
 import {
   getFilter,
-  getUserTransactions,
-  getCurrencyExchangeRate,
   getGroupingVar,
   setDeleteId,
   setOpenDeleteModal,
@@ -20,15 +18,19 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useNavigate } from 'react-router';
 import { DateTime } from 'luxon';
-
+import {
+  getCurrencyExchangeRates,
+  getSelectedExchangeRate,
+} from '../../features/exchangeRatesSlice';
+import { getUserTransactions } from '../../features/transactionsSlice';
 const RightPanelTransactions = () => {
   const dispatch = useDispatch();
   const filter = useSelector(getFilter);
   const userTransactions = useSelector(getUserTransactions);
-  const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
+  console;
   const groupingVar = useSelector(getGroupingVar);
   const navigate = useNavigate();
-
+  const selectedCurrencyExchangeRate = useSelector(getSelectedExchangeRate);
   //define table columns
   const columns = [
     {
@@ -99,9 +101,9 @@ const RightPanelTransactions = () => {
     dispatch(setOpenDeleteModal(true));
   };
 
-  if (Object.keys(userTransactions).length !== 0) {
+  if (userTransactions.success && userTransactions?.data && userTransactions.data.length !== 0) {
     //use dateDiff on returned date values from database
-    Object.values(userTransactions.transactions)
+    userTransactions.data
       .filter((item) => item.type === filter.income || item.type === filter.expense)
       //Filter data based on user input. Dispatch setGroupingVar action
       // will set desired filter
@@ -130,8 +132,8 @@ const RightPanelTransactions = () => {
           <span style={{ color: item.type === 'income' ? 'green' : 'red' }}>
             {' '}
             {item.type === 'income'
-              ? `+ ${intToString((item.amountInBAM * currencyExchangeRate).toFixed(2))}`
-              : `- ${intToString((item.amountInBAM * currencyExchangeRate).toFixed(2))}`}
+              ? `+ ${intToString((item.amountInBAM * selectedCurrencyExchangeRate).toFixed(2))}`
+              : `- ${intToString((item.amountInBAM * selectedCurrencyExchangeRate).toFixed(2))}`}
           </span>
         );
 
@@ -159,10 +161,9 @@ const RightPanelTransactions = () => {
 
   return (
     <Paper sx={{ width: '98%', overflow: 'hidden', overflowX: 'none', wordBreak: 'break-all' }}>
-      {Object.keys(userTransactions).length !== 0 &&
-      Object.values(userTransactions.transactions).length < 1 ? (
+      {userTransactions.success && userTransactions.data.length === 0 ? (
         'Start adding transactions'
-      ) : Object.keys(userTransactions).length !== 0 ? (
+      ) : userTransactions.success && userTransactions.data.length > 0 ? (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>

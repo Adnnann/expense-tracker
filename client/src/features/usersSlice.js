@@ -105,99 +105,12 @@ export const updateUserPassword = createAsyncThunk('users/updateUserPassword', a
     .catch((error) => error);
 });
 
-export const fetchUserTransactions = createAsyncThunk('users/transactions', async () => {
-  return await axios
-    .get(`/api/transaction`)
-    .then((response) => response.data)
-    .catch((error) => error);
-});
-
-export const createTransaction = createAsyncThunk(
-  'users/addUserTransaction',
-  async (transaction) => {
-    return await axios
-      .post(`/api/transaction`, transaction, {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((response) => response.data)
-      .catch((error) => error);
-  },
-);
-export const updateUserTransaction = createAsyncThunk(
-  'users/updateUserTransaction',
-  async (transaction) => {
-    return await axios
-      .put(
-        `/api/transaction/${transaction.params}`,
-        {
-          title: transaction.title,
-          amountInBAM: transaction.amountInBAM,
-          amountInEUR: transaction.amountInEUR,
-          amountInUSD: transaction.amountInUSD,
-          currency: transaction.currency,
-        },
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-      .then((response) => response.data)
-      .catch((error) => error);
-  },
-);
-
-export const deleteTransaction = createAsyncThunk('users/deleteTransaction', async (params) => {
-  const response = await axios.delete(`/api/transaction/${params}`, {
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
-});
-
-export const fetchUserTransactionData = createAsyncThunk(
-  'users/transactionData',
-  async (params) => {
-    return await axios
-      .get(`/api/transaction/${params}`)
-      .then((response) => response.data)
-      .catch((error) => error);
-  },
-);
-
 export const reloginUser = createAsyncThunk('users/loggedUser', async (id) => {
   return await axios
     .post(`/api/users/relogin`, { token: id })
     .then((response) => response.data)
     .catch((error) => error);
 });
-
-//obtain currency exchange rate
-export const fetchCurrencyExchangeRates = createAsyncThunk(
-  'users/currencyExchangeRates',
-  async () => {
-    const requests = [
-      'https://api.api-ninjas.com/v1/convertcurrency?want=USD&have=BAM&amount=1',
-      'https://api.api-ninjas.com/v1/convertcurrency?want=EUR&have=BAM&amount=1',
-      '/api/exchangeRates'
-    ];
-
-    return await axios
-      .all([axios.get(requests[0]), axios.get(requests[1])])
-      .then(
-        axios.spread((res1, res2) => [{ USD: res1.data.new_amount, EUR: res2.data.new_amount }]),
-      )
-      .catch((errors) => {
-        console.log(errors);
-      });
-  },
-);
 
 export const fetchSavedExchangeRatesFromDB = createAsyncThunk(
   'users/exchangeRatesFromDB',
@@ -239,21 +152,10 @@ const initialState = {
   deleteAccountModal: true,
   savedExchangeRates: {},
   exchangeRatesFromDB: {},
+  dashboardData: [],
 
   //TRANACTIONS
-  userTransactions: {},
-  dashboardData: [],
-  addTransaction: {},
-  filter: { income: 'income', expense: 'expense' },
-  currencyExchangeRate: 1,
-  currency: 'BAM',
-  groupingVar: 'day',
-  updatedUserTransaction: {},
-  deleteTransaction: {},
-  userTransactionData: {},
-  deleteId: '',
-  openDeleteModal: false,
-  transactionsOverviewLevel: 'Daily',
+ 
   //STATISTICS
   filterVarForCharts: '',
   groupingVarForCharts: 'day',
@@ -283,33 +185,14 @@ export const usersSlice = createSlice({
     dashboardData: (state, action) => {
       state.dashboardData = [...state.dashboardData, action.payload];
     },
-    cleanTransactionData: (state, action) => {
-      state.addTransaction = {};
-    },
-    cleanTransactionUpdatedData: (state, action) => {
-      state.updatedUserTransaction = {};
-    },
-    setFilter: (state, action) => {
-      state.filter = action.payload;
-    },
+   
     setCurrency: (state, action) => {
       state.currency = action.payload;
     },
     setCurrencyExchangeRate: (state, action) => {
       state.currencyExchangeRate = action.payload;
     },
-    setGroupingVar: (state, action) => {
-      state.groupingVar = action.payload;
-    },
-    setDeleteId: (state, action) => {
-      state.deleteId = action.payload;
-    },
-    setOpenDeleteModal: (state, action) => {
-      state.openDeleteModal = action.payload;
-    },
-    cleanDeleteTransactionData: (state, payload) => {
-      state.deleteTransaction = {};
-    },
+   
     setFilterVarForCharts: (state, action) => {
       state.filterVarForCharts = action.payload;
     },
@@ -360,39 +243,11 @@ export const usersSlice = createSlice({
       return { ...state, updatedUserData: payload };
     },
     // TRANSACTIONS
-    [fetchUserTransactions.pending]: (state, { payload }) => {
-      return { ...state, 
-        userTransactions: {
-          status: 'loading',
-          error: false,
-          payload: null,
-
-        }};
-    },
-    [fetchUserTransactions.fulfilled]: (state, { payload }) => {
-      return { ...state, 
-        userTransactions: {
-          status: 'success',
-          error: false,
-          payload: payload.message,
-        }};
-    },
-    [fetchUserTransactions.rejected]: (state, { payload }) => {
-      return { ...state, 
-        userTransactions: {
-          status: 'error',
-          error: true,
-          payload: payload.error,
-        }};
-    },
     [createTransaction.fulfilled]: (state, { payload }) => {
-      return { ...state, addTransaction: payload };
+      return { ...state, addUserTransaction: payload };
     },
     [updateUserTransaction.fulfilled]: (state, { payload }) => {
       return { ...state, updatedUserTransaction: payload };
-    },
-    [fetchUserTransactionData.fulfilled]: (state, { payload }) => {
-      return { ...state, userTransactionData: payload };
     },
     [deleteTransaction.fulfilled]: (state, { payload }) => {
       return { ...state, deleteTransaction: payload };
@@ -400,15 +255,8 @@ export const usersSlice = createSlice({
     [reloginUser.fulfilled]: (state, { payload }) => {
       return { ...state, loggedUser: payload, userDataToDisplay: payload.message };
     },
-    [fetchCurrencyExchangeRates.fulfilled]: (state, { payload }) => {
-      return { ...state, currencyExchangeRates: payload };
-    },
-    [saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
-      return { ...state, savedExchangeRates: payload };
-    },
-    [fetchSavedExchangeRatesFromDB.fulfilled]: (state, { payload }) => {
-      return { ...state, exchangeRatesFromDB: payload };
-    },
+
+    
   },
 });
 
@@ -424,19 +272,12 @@ export const getUserDataToDisplay = (state) => state.users.userDataToDisplay;
 export const getDeleteAccountModal = (state) => state.users.deleteAccountModal;
 export const getCurrencyExchangeRates = (state) => state.users.currencyExchangeRates;
 ///
-export const getUserTransactions = (state) => state.users.userTransactions;
-export const getDashboardData = (state) => state.users.dashboardData;
-export const getTransactionData = (state) => state.users.addTransaction;
-export const getFilter = (state) => state.users.filter;
-export const getCurrencyExchangeRate = (state) => state.users.currencyExchangeRate;
+
+
+
 export const getCurrency = (state) => state.users.currency;
 export const getGroupingVar = (state) => state.users.groupingVar;
-export const getUpdatedUserTransaction = (state) => state.users.updatedUserTransaction;
-export const getUserTransactionData = (state) => state.users.userTransactionData;
-export const getDeleteId = (state) => state.users.deleteId;
-export const getOpenDeleteModal = (state) => state.users.openDeleteModal;
-export const getDeleteAPIMessage = (state) => state.users.deleteTransaction;
-export const getTransactionsOverviewLevel = (state) => state.users.transactionsOverviewLevel;
+
 
 ///
 export const getFilterVarForCharts = (state) => state.users.filterVarForCharts;

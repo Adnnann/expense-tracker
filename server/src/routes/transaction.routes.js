@@ -5,7 +5,7 @@ import authCtrl from '../controllers/auth.controller'
 const router = express.Router()
 
 router.route('/api/transaction')
-.post(authCtrl.hasAuthorization, transactionCtrl.createTransaction)
+.post(transactionCtrl.createTransaction)
 .get(transactionCtrl.getTransactions)
 
 router.route('/api/transaction/:transactionId')

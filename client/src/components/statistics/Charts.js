@@ -3,7 +3,6 @@ import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js-basic-dist';
 import {
   getFilterVarForCharts,
-  getUserTransactions,
   getChartType,
   getGroupingVarForCharts,
 } from '../../features/usersSlice';
@@ -12,6 +11,8 @@ import date from 'date-and-time';
 import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { getUserTransactions } from '../../features/transactionsSlice';
+import { calculateIncomesAndExpenses } from '../utils/functions/HelperFunctions';
 
 const data = [
   {
@@ -36,122 +37,58 @@ const Plots = () => {
 
   const Plot = createPlotlyComponent(Plotly);
 
-  return Object.keys(userTransactions).length !== 0 &&
-    Object.values(userTransactions.transactions).length !== 0 ? (
+  //function to calculate total incomes and expenses for selected period
+  //and to display them in chart
+  const calculateTotalIncomesAndExpenses = (type) => {
+    const result = userTransactions.data
+      .filter((item) =>
+        filterVarForCharts === 'week'
+          ? item.week === `Week ${DateTime.now().weekNumber}`
+          : filterVarForCharts === 'month'
+          ? item.month === `${date.format(new Date(), 'MMM')}`
+          : filterVarForCharts === 'year'
+          ? item.year === `${date.format(new Date(), 'YYYY')}`
+          : null,
+      )
+      .reduce((group, item) => {
+        const { type } = item;
+        group[type] = group[type] ?? [];
+        group[type].push(item.amountInBAM);
+        return group;
+      }, {});
+
+    return type === 'income'
+      ? result.income.reduce((acc, item) => acc + item, 0)
+      : result.expense.reduce((acc, item) => acc + item, 0);
+  };
+  return userTransactions.success && userTransactions.data.length > 0 ? (
     // display chart based on user selection.
-    // Type string for charts is stored in Redux store
+    // chart type is stored in Redux store
     chartType !== 'pie' ? (
       <Plot
         data={[
           {
             type: chartType,
-            textinfo: 'percent+label',
-            x: _.chain(Object.values(userTransactions.transactions))
-              .filter((item) => item.type === 'income')
-              // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
-              //data are filtered in accordance with user input
-
-              // filters can be week, month and year
-              .filter(
-                filterVarForCharts === 'week'
-                  ? { week: `Week ${DateTime.now().weekNumber}` }
-                  : //grouping var should be chnaged with filterVarForCharts
-                  filterVarForCharts === 'month'
-                  ? { month: `${date.format(new Date(), 'MMM')}` }
-                  : filterVarForCharts === 'year'
-                  ? { year: `${date.format(new Date(), 'YYYY')}` }
-                  : null,
-              )
-              .orderBy(['created'], ['asc'])
-              // CREATE FILTER IN STORE THE SAME WAY AS I MADE IT FOR TRANSACTIONS TAB DATA
-              .groupBy(`${groupingVarForCharts}`)
-              .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              .toPairs()
-              // maps first values (grouped values)
-              .map((item) => item[0])
-              .value(),
-            y: _.chain(Object.values(userTransactions.transactions))
-              .filter((item) => item.type === 'income')
-              // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
-              //data are filtered in accordance with user input
-
-              // filters can be week, month and year
-              .filter(
-                filterVarForCharts === 'week'
-                  ? { week: `Week ${DateTime.now().weekNumber}` }
-                  : //grouping var should be chnaged with filterVarForCharts
-                  filterVarForCharts === 'month'
-                  ? { month: `${date.format(new Date(), 'MMM')}` }
-                  : filterVarForCharts === 'year'
-                  ? { year: `${date.format(new Date(), 'YYYY')}` }
-                  : null,
-              )
-              .orderBy(['created'], ['asc'])
-              // CREATE FILTER IN STORE THE SAME WAY AS I MADE IT FOR TRANSACTIONS TAB DATA
-              .groupBy(`${groupingVarForCharts}`)
-              .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              .toPairs()
-              // maps first values (grouped values)
-              .map((item) => item[1])
-              .value(),
+            label: ['Incomes'],
+            textinfo: 'label',
+            hoverinfo: 'label',
+            x: [calculateTotalIncomesAndExpenses('income')],
+            y: [calculateTotalIncomesAndExpenses('income')],
+            showlegend: false,
             marker: { color: 'green' },
             name: 'Income',
           },
           {
+            showlegend: false,
             type: chartType,
-            x: _.chain(Object.values(userTransactions.transactions))
-              .filter((item) => item.type === 'expense')
-              // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
-              //data are filtered in accordance with user input
-
-              // filters can be week, month and year
-              .filter(
-                filterVarForCharts === 'week'
-                  ? { week: `Week ${DateTime.now().weekNumber}` }
-                  : //grouping var should be chnaged with filterVarForCharts
-                  filterVarForCharts === 'month'
-                  ? { month: `${date.format(new Date(), 'MMM')}` }
-                  : filterVarForCharts === 'year'
-                  ? { year: `${date.format(new Date(), 'YYYY')}` }
-                  : null,
-              )
-              .orderBy(['created'], ['asc'])
-              // CREATE FILTER IN STORE THE SAME WAY AS I MADE IT FOR TRANSACTIONS TAB DATA
-              .groupBy(`${groupingVarForCharts}`)
-              .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              .toPairs()
-              // maps first values (grouped values)
-              .map((item) => item[0])
-              .value(),
-            y: _.chain(Object.values(userTransactions.transactions))
-              .filter((item) => item.type === 'expense')
-              // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
-              //data are filtered in accordance with user input
-
-              // filters can be week, month and year
-              .filter(
-                filterVarForCharts === 'week'
-                  ? { week: `Week ${DateTime.now().weekNumber}` }
-                  : //grouping var should be chnaged with filterVarForCharts
-                  filterVarForCharts === 'month'
-                  ? { month: `${date.format(new Date(), 'MMM')}` }
-                  : filterVarForCharts === 'year'
-                  ? { year: `${date.format(new Date(), 'YYYY')}` }
-                  : null,
-              )
-              .orderBy(['created'], ['asc'])
-              // CREATE FILTER IN STORE THE SAME WAY AS I MADE IT FOR TRANSACTIONS TAB DATA
-              .groupBy(`${groupingVarForCharts}`)
-              .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              .toPairs()
-              // maps first values (grouped values)
-              .map((item) => item[1])
-              .value(),
+            textinfo: 'percent+label',
+            x: [calculateTotalIncomesAndExpenses('expense')],
+            y: [calculateTotalIncomesAndExpenses('expense')],
             marker: { color: 'red' },
             name: 'Expense',
           },
         ]}
-        layout={{ width: 350, margin: { t: 4, b: 1, r: 50, l: 50 } }}
+        layout={{ width: 350, margin: { t: 4, b: 20, r: 50, l: 50 } }}
       />
     ) : (
       //pie chart has different logic so in case user did not select either bar chart
@@ -160,45 +97,8 @@ const Plots = () => {
         data={[
           {
             values: [
-              ..._.chain(Object.values(userTransactions.transactions))
-                .filter((item) => item.type === 'income')
-                // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
-                //data are filtered in accordance with user input
-
-                // filters can be week, month and year
-                .filter(
-                  filterVarForCharts === 'week'
-                    ? { week: `Week ${DateTime.now().weekNumber}` }
-                    : filterVarForCharts === 'month'
-                    ? { month: `${date.format(new Date(), 'MMM')}` }
-                    : filterVarForCharts === 'year'
-                    ? { year: `${date.format(new Date(), 'YYYY')}` }
-                    : null,
-                )
-                .orderBy(['created'], ['asc'])
-                .groupBy(`${groupingVarForCharts}`)
-                .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                .toPairs()
-                // maps first values (grouped values)
-                .map((item) => item[1])
-                .value(),
-              ..._.chain(Object.values(userTransactions.transactions))
-                .filter((item) => item.type === 'expense')
-                .filter(
-                  filterVarForCharts === 'week'
-                    ? { week: `Week ${DateTime.now().weekNumber}` }
-                    : filterVarForCharts === 'month'
-                    ? { month: `${date.format(new Date(), 'MMM')}` }
-                    : filterVarForCharts === 'year'
-                    ? { year: `${date.format(new Date(), 'YYYY')}` }
-                    : null,
-                )
-                .orderBy(['created'], ['asc'])
-                .groupBy(`${groupingVarForCharts}`)
-                .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-                .toPairs()
-                .map((item) => item[1])
-                .value(),
+              calculateTotalIncomesAndExpenses('income'),
+              calculateTotalIncomesAndExpenses('expense'),
             ],
             type: 'pie',
             labels: ['Incomes', 'Expenses'],

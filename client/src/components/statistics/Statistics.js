@@ -2,70 +2,22 @@ import {
   getUserToken,
   userToken,
   signoutUser,
-  fetchUserTransactions,
   setGroupingVarForCharts,
   setGroupingVar,
   setFilterVarForCharts,
-  getStatisticsOverviewLevel,
-  setTransactionsOverviewLevel,
-  setStatisticsOverviewLevel,
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import { Box, Grid, Typography } from '@material-ui/core';
-import Item from '@mui/material/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { Box, Grid } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import { makeStyles } from '@material-ui/core';
 import LeftPanelStatistics from './LeftPanelStatistics';
 import { useEffect, useState } from 'react';
 import RightPanelStatistics from './RightPanelStatistics';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { styled, alpha } from '@mui/material/styles';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Plots from './Charts';
-
-const StyledMenu = styled((props) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'right',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    {...props}
-  />
-))(({ theme }) => ({
-  '& .MuiPaper-root': {
-    marginTop: theme.spacing(1),
-    minWidth: 180,
-    color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-    boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-    '& .MuiMenu-list': {
-      padding: '4px 0',
-    },
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
-      },
-      '&:active': {
-        backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-      },
-    },
-  },
-}));
+import DropdownMenuButtons from '../utils/DropdownMenuButtons';
+import { fetchUserTransactions } from '../../features/transactionsSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -102,17 +54,9 @@ const Statistics = () => {
     }
   }, [token.length, dispatch]);
 
-  const redirectTosignin = () => {
-    navigate('/');
-    signoutUser();
-    //clean store
-    window.location.reload();
-  };
 
-  const statisticsOverviewLevel = useSelector(getStatisticsOverviewLevel);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
 
@@ -183,6 +127,8 @@ const Statistics = () => {
     navigate('/statistics');
   };
 
+  const buttons = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
+
   return (
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={4} lg={4} xl={4}>
@@ -202,82 +148,26 @@ const Statistics = () => {
               Dashboard
             </Button>
 
-            <Button
-              style={{ textTransform: 'none' }}
-              id='demo-customized-button'
-              aria-controls={open ? 'demo-customized-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={open ? 'true' : undefined}
-              disableElevation
-              onClick={handleClick}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              Transactions
-            </Button>
-            <StyledMenu
-              id='demo-customized-menu'
-              MenuListProps={{
-                'aria-labelledby': 'demo-customized-button',
-              }}
-              anchorEl={anchorEl}
+            <DropdownMenuButtons
+              buttonLabel='Transactions'
+              handleOpenMenuButtons={handleClick}
+              menuButtons={buttons}
+              menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
               open={open}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={dailyData} disableRipple>
-                Daily
-              </MenuItem>
+              handleClose={handleClose}
+              anchorEl={anchorEl}
+            />
 
-              <MenuItem onClick={weeklyData} disableRipple>
-                Weekly
-              </MenuItem>
-
-              <MenuItem onClick={monthlyData} disableRipple>
-                Monthly
-              </MenuItem>
-
-              <MenuItem onClick={annualData} disableRipple>
-                Yearly
-              </MenuItem>
-            </StyledMenu>
-
-            <Button
-              style={{ textTransform: 'none' }}
-              id='demo-customized-button'
-              aria-controls={openStatistics ? 'demo-customized-menu' : undefined}
-              aria-haspopup='true'
-              aria-expanded={openStatistics ? 'true' : undefined}
-              disableElevation
-              variant='contained'
-              onClick={handleClickStatistics}
-              endIcon={<KeyboardArrowDownIcon />}
-            >
-              Statistics
-            </Button>
-            <StyledMenu
-              id='demo-customized'
-              MenuListProps={{
-                'aria-labelledby': 'demo-customized',
-              }}
-              anchorEl={anchorElStatistics}
+            <DropdownMenuButtons
+              buttonLabel='Statistics'
+              handleOpenMenuButtons={handleClickStatistics}
+              menuButtons={['Week', 'Month', 'Year']}
+              menuFunctions={[week, month, year]}
               open={openStatistics}
-              onClose={handleCloseStatistics}
-            >
-              <MenuItem onClick={week} disableRipple>
-                Week
-              </MenuItem>
-
-              <MenuItem onClick={month} disableRipple>
-                Month
-              </MenuItem>
-
-              <MenuItem onClick={year} disableRipple>
-                Year
-              </MenuItem>
-            </StyledMenu>
+              handleClose={handleCloseStatistics}
+              anchorEl={anchorElStatistics}
+            />
           </ButtonGroup>
-          {/* <Typography component={'p'} sx={{fontStyle:"italic"}} >
-            {`Overview level: ${statisticsOverviewLevel}`}
-        </Typography> */}
         </Box>
       </Grid>
 

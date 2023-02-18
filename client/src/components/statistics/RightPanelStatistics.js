@@ -5,22 +5,22 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import {
-  getUserTransactions,
-  getGroupingVarForCharts,
-  getFilterVarForCharts,
-  getCurrencyExchangeRate,
-} from '../../features/usersSlice';
+import { getGroupingVarForCharts, getFilterVarForCharts } from '../../features/usersSlice';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
+import {
+  getCurrencyExchangeRates,
+  getSelectedExchangeRate,
+} from '../../features/exchangeRatesSlice';
+import { getUserTransactions } from '../../features/transactionsSlice';
 
 const RightPanelSatistics = () => {
   const userTransactions = useSelector(getUserTransactions);
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const filterVarForCharts = useSelector(getFilterVarForCharts);
-  const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
+  const selectedExchangeRate = useSelector(getSelectedExchangeRate);
 
   //define table columns
   const columns = [
@@ -53,8 +53,8 @@ const RightPanelSatistics = () => {
 
   const rows = [];
 
-  if (Object.keys(userTransactions).length !== 0) {
-    _.chain(Object.values(userTransactions.transactions))
+  if (userTransactions.success && userTransactions.data.length > 0) {
+    _.chain(userTransactions.data)
       // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
       //data are filtered in accordance with user input
 
@@ -97,12 +97,12 @@ const RightPanelSatistics = () => {
         const firstRow = <div>{item[0]}</div>;
         const secondRow = (
           <span style={{ color: 'green' }}>
-            {item[1].income ? `+ ${(item[1].income * currencyExchangeRate).toFixed(2)}` : '0'}
+            {item[1].income ? `+ ${(item[1].income * selectedExchangeRate).toFixed(2)}` : '0'}
           </span>
         );
         const thirdRow = (
           <span style={{ color: 'red' }}>
-            {item[1].expense ? `- ${(item[1].expense * currencyExchangeRate).toFixed(2)}` : '0'}
+            {item[1].expense ? `- ${(item[1].expense * selectedExchangeRate).toFixed(2)}` : '0'}
           </span>
         );
         // generate rows
@@ -122,8 +122,7 @@ const RightPanelSatistics = () => {
         width: { xl: '40%' },
       }}
     >
-      {Object.keys(userTransactions).length !== 0 &&
-      Object.values(userTransactions.transactions).length !== 0 ? (
+      {userTransactions.data.length > 0 && userTransactions.success ? (
         <TableContainer sx={{ maxHeight: 200 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableBody>

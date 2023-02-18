@@ -38,7 +38,6 @@ import { styled, alpha } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
 
-
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -357,15 +356,11 @@ const Transactions = () => {
         </Grid>
 
         <Grid item xs={12} md={2} lg={2} xl={2}>
-          <Item>
-            <LeftPanelTransactions />
-          </Item>
+          <LeftPanelTransactions />
         </Grid>
 
         <Grid item xs={12} md={8} lg={7} xl={7}>
-          <Item>
-            <RightPanelTransactions />
-          </Item>
+          <RightPanelTransactions />
         </Grid>
       </Grid>
 

@@ -4,7 +4,7 @@ import dbErrorHandlers from './helpers/dbErrorHandlers'
 import jwtDecode from 'jwt-decode'
 
 const createTransaction = (req, res) => {
-
+console.log(req)
     const transaction = new Transaction(req.body) 
     transaction.save((err)=>{
         if(err){
@@ -25,7 +25,7 @@ const getTransactions = (req, res) => {
         if(err){
             return res.send({error:dbErrorHandlers.getErrorMessage(err)})
         }
-        res.send({message:transactions})
+       return res.send({message:transactions})
     })
 }
 
@@ -52,7 +52,7 @@ const removeTransaction = (req, res, next) => {
         if(err){
             return res.send({error: errorHandler.getErrorMessage(err)})
         }
-        res.send({message:'Transaction deleted'})
+        return res.send({message:'Transaction deleted'})
     })
 }
   

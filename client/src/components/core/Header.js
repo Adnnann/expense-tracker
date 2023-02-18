@@ -11,9 +11,6 @@ import {
   reloginUser,
   getUserToken,
   fetchUserTransactionData,
-  fetchUserTransactions,
-  fetchCurrencyExchangeRates,
-  getCurrencyExchangeRates,
   getSavedExchangeRates,
   fetchSavedExchangeRatesFromDB,
   saveExchangeRatesInDB,
@@ -31,7 +28,11 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import { useState } from 'react';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
-import { getUserTransactions } from '../../features/transactionsSlice';
+import { fetchUserTransactions } from '../../features/transactionsSlice';
+import {
+  fetchCurrencyExchangeRates,
+  getCurrencyExchangeRates,
+} from '../../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -93,29 +94,34 @@ const Header = () => {
   const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
   const savedExchangeRates = useSelector(getSavedExchangeRates);
 
-
   useEffect(() => {
     if (Object.values(loggedUser).length === 0 && userToken?.message && !loggedUser?.error) {
       dispatch(reloginUser(userToken.message));
       dispatch(fetchUserTransactions());
-      dispatch(getUserTransactions());
     }
 
     if (Object.keys(currencyExchangeRates).length === 0) {
       dispatch(fetchCurrencyExchangeRates());
     }
-console.log(Object.values(savedExchangeRates).length)
-    if(Object.values(currencyExchangeRates).length > 0
-    && Object.values(savedExchangeRates).length === 0
-    ){
-        dispatch(saveExchangeRatesInDB({rates:{
-          USD:currencyExchangeRates[0].USD,
-          EUR:currencyExchangeRates[0].EUR
-        }}))
 
+    if (currencyExchangeRates?.data?.USD > 0 && Object.values(savedExchangeRates).length === 0) {
+      dispatch(
+        saveExchangeRatesInDB({
+          rates: {
+            USD: currencyExchangeRates.data[0],
+            EUR: currencyExchangeRates.data[1],
+          },
+        }),
+      );
     }
-
-  }, [loggedUser.user, userToken, userDisplayData, currencyExchangeRates,savedExchangeRates, savedExchangeRates]);
+  }, [
+    loggedUser.user,
+    userToken,
+    userDisplayData,
+    currencyExchangeRates,
+    savedExchangeRates,
+    savedExchangeRates,
+  ]);
 
   const open = Boolean(anchorEl);
 

@@ -7,15 +7,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import date from 'date-and-time';
-import { getUserTransactions, getCurrencyExchangeRate } from '../../features/usersSlice';
+import { getCurrencyExchangeRate } from '../../features/usersSlice';
 import { useSelector } from 'react-redux';
+import { fetchUserTransactions, getUserTransactions } from '../../features/transactionsSlice';
 
-const RightSidePanel = () => {
+const RightSidePanel = ({ data, selectedExchangeRate }) => {
   //get dashboard data
-  const userTransactions = useSelector(getUserTransactions);
-  const currencyExchangeRate = useSelector(getCurrencyExchangeRate);
 
-  // define rows for displaying trnsactions
   const columns = [
     {
       id: 'recent',
@@ -73,9 +71,9 @@ const RightSidePanel = () => {
     return (num / si[index].v).toFixed(2).replace(/\.0+$|(\.[0-9]*[1-9])0+$/, '$1') + si[index].s;
   };
 
-  userTransactions?.transactions ? userTransactions.transactions
+  data
     .filter(
-      (item) => new Date(item.created) > new Date(new Date().getTime() - 3 * 24 * 60 * 60 * 1000),
+      (item) => new Date(item.created) > new Date(new Date().getTime() - 60 * 24 * 60 * 60 * 1000),
     )
     .map((item) => {
       //use dateDiff on returned date values from database
@@ -92,13 +90,13 @@ const RightSidePanel = () => {
         <span style={{ color: item.type === 'income' ? 'green' : 'red' }}>
           {' '}
           {item.type === 'income'
-            ? `+ ${intToString((item.amountInBAM * currencyExchangeRate).toFixed(2))}`
-            : `- ${intToString((item.amountInBAM * currencyExchangeRate).toFixed(2))}`}
+            ? `+ ${intToString((item.amountInBAM * selectedExchangeRate).toFixed(2))}`
+            : `- ${intToString((item.amountInBAM * selectedExchangeRate).toFixed(2))}`}
         </span>
       );
       // generate rows
       return rows.push(createData(firstRow, secondRow));
-    }) :null;
+    });
 
   return (
     <Paper
@@ -110,50 +108,46 @@ const RightSidePanel = () => {
         marginTop: '20px',
       }}
     >
-      {userTransactions?.transactions && userTransactions.transactions.length > 0 ? (
-        <TableContainer sx={{ maxHeight: 440 }}>
-          <Table stickyHeader aria-label='sticky table'>
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={Math.random() * 100}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth, backgroundColor: 'grey' }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row, index) => {
-                return (
-                  <TableRow
-                    style={{ padding: '0 !important', height: '90px', wordBreak: 'break' }}
-                    key={index}
-                  >
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell
-                          key={Math.random() * 10}
-                          align={column.align}
-                          style={{ wordBreak: 'break-all' }}
-                        >
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      ) : null}
+      <TableContainer sx={{ maxHeight: 440 }}>
+        <Table stickyHeader aria-label='sticky table'>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={Math.random() * 100}
+                  align={column.align}
+                  style={{ minWidth: column.minWidth, backgroundColor: 'grey' }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {rows.map((row, index) => {
+              return (
+                <TableRow
+                  style={{ padding: '0 !important', height: '90px', wordBreak: 'break' }}
+                  key={index}
+                >
+                  {columns.map((column) => {
+                    const value = row[column.id];
+                    return (
+                      <TableCell
+                        key={Math.random() * 10}
+                        align={column.align}
+                        style={{ wordBreak: 'break-all' }}
+                      >
+                        {column.format && typeof value === 'number' ? column.format(value) : value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Paper>
   );
 };

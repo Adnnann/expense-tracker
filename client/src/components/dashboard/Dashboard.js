@@ -3,7 +3,6 @@ import {
   getUserToken,
   userToken,
   signoutUser,
-  getFilter,
   cleanStore,
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,15 +19,17 @@ import LeftSidePanel from './LeftSidePanel';
 import RightSidePanel from './RightSidePanel';
 import Loader from '../utils/Loader';
 import { getUserTransactions } from '../../features/transactionsSlice';
-
+import { getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
+import { getFilter } from '../../features/transactionsSlice';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector(getUserToken);
-  const userTransactions = useSelector(getUserTransactions);
+
   const [inactiveUser, setInactiveUser] = useState(false);
   const filter = useSelector(getFilter);
-
+  const { loading, success, error, data } = useSelector(getUserTransactions);
+  const selectedExchangeRate = useSelector(getSelectedExchangeRate);
   useEffect(() => {
     dispatch(userToken());
     //In case user tried to visit url /protected without token, redirect
@@ -67,22 +68,21 @@ const Dashboard = () => {
   const redirectTosignin = () => {
     navigate('/');
     dispatch(signoutUser());
-    dispatch(cleanStore())
+    dispatch(cleanStore());
   };
 
   return (
-  
-      <Grid container justifyContent='center'>
-        <Grid item xs={12} md={4} lg={4} xl={4}>
-          <LeftSidePanel />
-        </Grid>
+    <Grid container justifyContent='center'>
+      <Grid item xs={12} md={4} lg={4} xl={4}>
+        <LeftSidePanel />
+      </Grid>
 
-        <Grid item xs={12} md={8} lg={6} xl={6}>
-     
-         <RightSidePanel /> 
-  
-        </Grid>
-        <Dialog open={inactiveUser}>
+      <Grid item xs={12} md={8} lg={6} xl={6}>
+        {loading && <Loader />}
+        {error && <h1>{error}</h1>}
+        {success && <RightSidePanel data={data} selectedExchangeRate={selectedExchangeRate} />}
+      </Grid>
+      <Dialog open={inactiveUser}>
         <DialogTitle>Session expired</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -97,11 +97,7 @@ const Dashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      </Grid>
-
-
-     
-
+    </Grid>
   );
 };
 export default Dashboard;

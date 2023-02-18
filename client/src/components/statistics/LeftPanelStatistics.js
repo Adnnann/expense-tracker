@@ -1,11 +1,6 @@
 import Typography from '@material-ui/core/Typography';
-import Card from '@mui/material/Card';
-import CardMedia from '@mui/material/CardMedia';
 import { Box } from '@mui/material';
 import { setChartType } from '../../features/usersSlice';
-import lineChartImage from '../../assets/images/lineChart.jpg';
-import barChartImage from '../../assets/images/barChart.png';
-import pieChartImage from '../../assets/images/pieChart.png';
 import { useDispatch } from 'react-redux';
 import { ButtonGroup, IconButton, makeStyles } from '@material-ui/core';
 import PieChartIcon from '@mui/icons-material/PieChart';
@@ -24,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 
 const LeftPanelStatistics = () => {
   const dispatch = useDispatch();
-  const classes = useStyles();
 
   //chart select functions
   const pieChart = () => {
@@ -50,10 +44,7 @@ const LeftPanelStatistics = () => {
         Charts
       </Typography>
 
-      {/*  
-    clicable images for user to select type of chart for statistical overview of data
-    */}
-
+      {/* clicable images for user to select type of chart for statistical overview of data */}
       <ButtonGroup>
         <IconButton onClick={pieChart}>
           <PieChartIcon sx={{ fontSize: '48px', color: 'green' }} />

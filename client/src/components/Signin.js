@@ -12,16 +12,12 @@ import {
   getUserSigninData,
   userToken,
   getUserToken,
-  fetchUserTransactions,
-  userDataToDisplay,
-  cleanUserData,
   cleanRegisteredUserData,
-  fetchCurrencyExchangeRates,
 } from '../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
-import { getUserTransactions } from '../features/transactionsSlice';
+import { getUserTransactions, fetchUserTransactions } from '../features/transactionsSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -81,7 +77,6 @@ const Signin = () => {
   // send request to server to login user and in case there are errors collect error
   const clickSubmit = () => {
     dispatch(fetchUserTransactions());
-    dispatch(getUserTransactions());
     const user = {
       email: values.email || undefined,
       password: values.password || undefined,

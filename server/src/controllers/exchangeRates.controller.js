@@ -1,7 +1,6 @@
 import ExchangeRates from "../models/exchangeRates.model"
 
 const getExchangeRates = async (req, res) => {
-    console.log(req)
      ExchangeRates
     .find({})
     .sort({updated: -1})

@@ -9,20 +9,22 @@ import Icon from '@material-ui/core/Icon';
 import { makeStyles } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  getUserTransactionData,
-  cleanTransactionUpdatedData,
-  updateUserTransaction,
-  getUpdatedUserTransaction,
-  fetchUserTransactions,
+  
   userToken,
   getUserToken,
-  fetchUserTransactionData,
-  getUserTransactions,
+
 } from '../../features/usersSlice';
 import { useNavigate, useParams } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
+import { 
+  fetchUserTransactionData, 
+  fetchUserTransactions,
+  getUserTransactionData,
+  cleanTransactionUpdatedData,
+  updateUserTransaction,
+  getUpdatedUserTransaction, } from '../../features/transactionsSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {

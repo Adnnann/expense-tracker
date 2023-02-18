@@ -41,7 +41,7 @@ export default function DropdownMenuButtons({
       >
         {menuButtons.map((button, index) => {
           return (
-            <div>
+            <div key={menuButtons[index]}>
               <MenuItem onClick={menuFunctions[index]} disableRipple>
                 <Typography textAlign='center' style={{ marginLeft: '5px', marginRight: '5px' }}>
                   {' '}

@@ -37,7 +37,7 @@ function MainRouter() {
           <Route path="/transactions/addNewIncome" element={<AddNewIncome />}></Route>
           <Route path="/transactions/addNewExpense" element={<AddNewExpense />}></Route>
           <Route path="/transaction/:transactionId" element={<EditTransaction />}></Route>
-          <Route path="/statistics" element={<Statistics />}></Route>
+          <Route path="/statistics" element={<Statistics />}></Route> 
         </Routes>
       <Footer />
     </Router>
