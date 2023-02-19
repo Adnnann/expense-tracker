@@ -21,6 +21,8 @@ import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
 import { fetchUserTransactions, createTransaction, getTransactionData } from '../../features/transactionsSlice';
+import { useCreateTransactionMutation } from '../../features/transactionsAPI';
+
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -100,8 +102,8 @@ const AddNewExpense = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const transactionData = useSelector(getTransactionData);
   const token = useSelector(getUserToken);
+  const [addExpense, result] = useCreateTransactionMutation()
 
   const [currency, setCurrency] = useState('BAM');
   const [values, setValues] = useState({
@@ -117,24 +119,8 @@ const AddNewExpense = () => {
   });
 
   useEffect(() => {
-    //check if user userToken exists.
-    dispatch(userToken());
-
-    //if there is no token, redirect to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
-    //if addedd successfully redirect to transactions
-    if (transactionData.hasOwnProperty('message')) {
-      dispatch(cleanTransactionData());
-      dispatch(fetchUserTransactions());
-      navigate('/transactions');
-    }
-  }, [transactionData.message, token.length]);
+    result.isSuccess && navigate('/transactions');
+  }, [result]);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
@@ -207,7 +193,7 @@ const AddNewExpense = () => {
         };
         break;
     }
-    dispatch(createTransaction(expense));
+    addExpense(expense)
   };
 
   return (
@@ -263,10 +249,10 @@ const AddNewExpense = () => {
 
         {
           //display error returned from server
-          transactionData.hasOwnProperty('error') && (
+          result.isError && (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              {transactionData.error}
+              {result.error.data}
             </Typography>
           )
         }

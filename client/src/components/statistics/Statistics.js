@@ -2,9 +2,6 @@ import {
   getUserToken,
   userToken,
   signoutUser,
-  setGroupingVarForCharts,
-  setGroupingVar,
-  setFilterVarForCharts,
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -17,7 +14,13 @@ import { useEffect, useState } from 'react';
 import RightPanelStatistics from './RightPanelStatistics';
 import Plots from './Charts';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
-import { fetchUserTransactions } from '../../features/transactionsSlice';
+import { 
+  setStatisticsOverviewLevel, 
+  setGroupingVarForCharts,
+  setGroupingVar,
+  setFilterVarForCharts
+} from '../../features/statisticsSlice';
+import { setTransactionsOverviewLevel } from '../../features/transactionsSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -39,20 +42,6 @@ const Statistics = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(getUserToken);
-  useEffect(() => {
-    //check if user token exists.
-    dispatch(userToken());
-    dispatch(fetchUserTransactions());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
-  }, [token.length, dispatch]);
 
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -81,12 +70,7 @@ const Statistics = () => {
   };
 
   //set filter based on user input
-  const dailyData = () => {
-    dispatch(setGroupingVar('day'));
-    dispatch(setTransactionsOverviewLevel('Daily'));
-    navigate('/transactions');
-  };
-
+  
   const weeklyData = () => {
     dispatch(setGroupingVar('week'));
     dispatch(setTransactionsOverviewLevel('Weekly'));
@@ -107,22 +91,19 @@ const Statistics = () => {
 
   //statistics data
   const week = () => {
-    dispatch(setFilterVarForCharts('week'));
-    dispatch(setGroupingVarForCharts('day'));
+    dispatch(setGroupingVarForCharts('week'));
     dispatch(setStatisticsOverviewLevel('Week'));
     navigate('/statistics');
   };
 
   const month = () => {
-    dispatch(setFilterVarForCharts('month'));
-    dispatch(setGroupingVarForCharts('week'));
+    dispatch(setGroupingVarForCharts('month'));
     dispatch(setStatisticsOverviewLevel('Month'));
     navigate('/statistics');
   };
 
   const year = () => {
-    dispatch(setFilterVarForCharts('year'));
-    dispatch(setGroupingVarForCharts('month'));
+    dispatch(setGroupingVarForCharts('year'));
     dispatch(setStatisticsOverviewLevel('Year'));
     navigate('/statistics');
   };
@@ -152,7 +133,7 @@ const Statistics = () => {
               buttonLabel='Transactions'
               handleOpenMenuButtons={handleClick}
               menuButtons={buttons}
-              menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
+              menuFunctions={[weeklyData, monthlyData, annualData]}
               open={open}
               handleClose={handleClose}
               anchorEl={anchorEl}

@@ -10,28 +10,28 @@ import {
   setFilterVarForCharts,
   setGroupingVarForCharts,
   setStatisticsOverviewLevel,
-  setGroupingVar,
   
-} from '../../features/usersSlice';
+} from '../../features/statisticsSlice';
 import _ from 'lodash';
 import { useNavigate } from 'react-router';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
 import {
   getCurrencyExchangeRates,
   getSelectedExchangeRate,
-  setSelectedExchangeRate,
-  
+  setSelectedExchangeRate,  
 } from '../../features/exchangeRatesSlice';
 import { 
-  getUserTransactions,
   getFilter, 
   setTransactionsOverviewLevel,
+  
+  setGroupingVar,
 } from '../../features/transactionsSlice';
 import LeftSidePanelData from './LeftSidePanelData';
 import SelectCurrency from './SelectCurrency';
 import { 
-  calculateIncomesAndExpenses 
-} from '../utils/functions/HelperFunctions';
+  calculateIncomesAndExpenses, calculateTotal 
+} from '../utils/functions/helper-functions';
+import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 
 
 
@@ -50,12 +50,19 @@ const LeftSideDashboard = () => {
   const navigate = useNavigate();
   const filter = useSelector(getFilter);
 
-  const { loading, success, error, data } = useSelector(getCurrencyExchangeRates);
-  const transactions = useSelector(getUserTransactions);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
+  const { data } = useSelector(getCurrencyExchangeRates);
   //manage dropdown menus in selection panel for transactions
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  //DODATI LOADER I ERROR HANDLING
+  const {
+    data:userTransactions,
+    isSuccess, 
+    isError, 
+   isFetching,
+  error} = useFetchUserTransactionsQuery()
 
   //manage dropdown menus in selection panel for statistical overview
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
@@ -94,29 +101,6 @@ const LeftSideDashboard = () => {
         dispatch(setSelectedExchangeRate(EUR));
         break;
     }
-  };
-
-  //present data in more professional way without too many numbers
-  const intToString = (num) => {
-    num = num.toString().replace(/[^0-9.]/g, '');
-    if (num < 1000) {
-      return num;
-    }
-    let si = [
-      { v: 1e3, s: 'K' },
-      { v: 1e6, s: 'M' },
-      { v: 1e9, s: 'B' },
-      { v: 1e12, s: 'T' },
-      { v: 1e15, s: 'P' },
-      { v: 1e18, s: 'E' },
-    ];
-    let index;
-    for (index = si.length - 1; index > 0; index--) {
-      if (num >= si[index].v) {
-        break;
-      }
-    }
-    return (num / si[index].v).toFixed(2).replace(/\.0+$|(\.[0-9]*[1-9])0+$/, '$1') + si[index].s;
   };
 
   //navigate to transactions and group and filter data in accordance with user input
@@ -180,7 +164,7 @@ const LeftSideDashboard = () => {
         },
       }}
     >
-      <>
+  
         <ButtonGroup style={{ marginTop: '10%', borderBottomStyle: 'solid' }}>
           <Button variant='contained' className={classes.buttonGroup}>
             Dashboard
@@ -213,56 +197,45 @@ const LeftSideDashboard = () => {
             anchorEl={anchorElStatistics}
           />
         </ButtonGroup>
-      </>
-      {transactions.success && transactions.data.length > 0 && (
+      
+      {isSuccess && userTransactions.length > 0 && (
         <>
           <Typography variant='h6' style={{ marginBottom: '0' }}>
             Total Balance
           </Typography>
 
           <span>
-            {transactions.success && transactions.data.length > 0 && (
+           
               <SelectCurrency
                 options={options}
                 currency={selectedValue}
                 handleChange={handleChange}
               />
-            )}
-            <LeftSidePanelData
-              data={transactions.data}
-              intToString={intToString}
-              selectedExchangeRate={selectedExchangeRate}
-            />
+         
+            
           </span>
-
-          <PieChart
-            //group and summarize data to get expenses and incomes
-            income={calculateIncomesAndExpenses(transactions.data, 'income', null)}
-            expense={
-              calculateIncomesAndExpenses(transactions.data, 'expense', null)
-              // _.chain(transactions.data.filter((item) => item.type === 'expense'))
-              //   .groupBy('type')
-              //   .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              //   .value().expense
-              //   ? (
-              //       _.chain(transactions.data.filter((item) => item.type === 'expense'))
-              //         .groupBy('type')
-              //         .mapValues((entries) => _.sumBy(entries, 'amountInBAM'))
-              //         .value().expense * selectedExchangeRate
-              //     ).toFixed(2)
-              //   : ''
-            }
+          
+         
+        <LeftSidePanelData
+            totalBalance={calculateTotal(userTransactions, null, selectedExchangeRate)}
           />
-        </>
-      )}
-
-      {success && data.length === 0 && (
-        //instruct user to go to tab transactions to start adding incomes and expenses in order to get the report
+    
+        <PieChart
+            //group and summarize data to get expenses and incomes
+          income={calculateIncomesAndExpenses(userTransactions, 'income', null, selectedExchangeRate)}
+          expense={calculateIncomesAndExpenses(userTransactions, 'expense', null, selectedExchangeRate)}
+          /> 
+    
+        {/*instruct user to go to tab transactions to start adding incomes and expenses in order to get the report*/}
         <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
           Click on the tab transactions and start adding incomes or expenses to generate dashboard
           data
         </Typography>
-      )}
+
+        </>
+        
+        )}
+     
     </Box>
   );
 };

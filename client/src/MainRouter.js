@@ -34,7 +34,7 @@ function MainRouter() {
           <Route path="/editPassword/:userId" element={<EditPassword />}></Route>
           <Route path="/deleteAccount/:userId" element={<DeleteAccount />}></Route>
           <Route path="/transactions" element={<Transactions />}></Route>
-          <Route path="/transactions/addNewIncome" element={<AddNewIncome />}></Route>
+         <Route path="/transactions/addNewIncome" element={<AddNewIncome />}></Route>
           <Route path="/transactions/addNewExpense" element={<AddNewExpense />}></Route>
           <Route path="/transaction/:transactionId" element={<EditTransaction />}></Route>
           <Route path="/statistics" element={<Statistics />}></Route> 

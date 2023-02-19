@@ -1,6 +1,6 @@
 import createPlotlyComponent from 'react-plotly.js/factory';
 import Plotly from 'plotly.js-basic-dist';
-const DonutChart = ({ income, expense, ratio }) => {
+const DonutChart = ({ income, expense }) => {
   // plotly package will be used for all charts in the project
   const Plot = createPlotlyComponent(Plotly);
   return (

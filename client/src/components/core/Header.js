@@ -7,14 +7,10 @@ import {
   signoutUser,
   getUserSigninData,
   cleanStore,
-  getUserDataToDisplay,
   reloginUser,
   getUserToken,
-  fetchUserTransactionData,
   getSavedExchangeRates,
-  fetchSavedExchangeRatesFromDB,
   saveExchangeRatesInDB,
-  getUserData,
 } from '../../features/usersSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -83,21 +79,19 @@ const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const userData = useSelector(getUserDataToDisplay);
-  const displayUserName = useSelector(getUserDataToDisplay);
+
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const loggedUser = useSelector(getUserSigninData);
   const userToken = useSelector(getUserToken);
-  const userDisplayData = useSelector(getUserDataToDisplay);
+ 
   const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
   const savedExchangeRates = useSelector(getSavedExchangeRates);
 
   useEffect(() => {
     if (Object.values(loggedUser).length === 0 && userToken?.message && !loggedUser?.error) {
       dispatch(reloginUser(userToken.message));
-      dispatch(fetchUserTransactions());
     }
 
     if (Object.keys(currencyExchangeRates).length === 0) {
@@ -117,7 +111,6 @@ const Header = () => {
   }, [
     loggedUser.user,
     userToken,
-    userDisplayData,
     currencyExchangeRates,
     savedExchangeRates,
     savedExchangeRates,
@@ -161,23 +154,23 @@ const Header = () => {
   const menuFunctions = [editProfile, editPassword, deleteAccount];
   return (
     <AppBar position='static'>
-      {Object.keys(displayUserName).length !== 0 ? (
+      {/* {Object.keys(displayUserName).length !== 0 ? ( */}
         <span
           style={{ display: 'block', marginLeft: '10px' }}
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
           <Typography component='p' sx={{ display: { xs: 'block', md: 'none' } }}>
-            Hello, {displayUserName.firstName}
+            Hello, NEED TO ADD DATA HERE
           </Typography>
           <Typography
             component='p'
             style={{ fontSize: '9px' }}
             sx={{ display: { xs: 'block', md: 'none' } }}
           >
-            {dateFormat(date, 'dddd, dd mmmm')}
+            {/* {dateFormat(date, 'dddd, dd mmmm')} */}
           </Typography>
         </span>
-      ) : null}
+
 
       <Toolbar disableGutters>
         <Box
@@ -240,10 +233,10 @@ const Header = () => {
         )}
       </Toolbar>
 
-      {Object.keys(displayUserName).length !== 0 ? (
+      {/* {Object.keys(displayUserName).length !== 0 ? ( */}
         <span style={{ marginLeft: '10px' }} sx={{ display: { xs: 'none', md: 'block' } }}>
           <Typography variant='h6' sx={{ display: { xs: 'none', md: 'block' } }}>
-            Hello, {displayUserName.firstName}
+            Hello, {/*displayUserName.firstName*/} NEED TO ADD DATA HERE
           </Typography>
           <Typography
             component='p'
@@ -253,7 +246,7 @@ const Header = () => {
             {dateFormat(date, 'dddd, dd mmmm')}
           </Typography>
         </span>
-      ) : null}
+      {/* ) : null} */}
     </AppBar>
   );
 };

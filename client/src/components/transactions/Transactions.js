@@ -2,23 +2,11 @@ import {
   getUserToken,
   userToken,
   signoutUser,
-  fetchUserTransactions,
-  setGroupingVar,
-  getOpenDeleteModal,
-  setOpenDeleteModal,
-  getDeleteId,
-  deleteTransaction,
-  getDeleteAPIMessage,
-  cleanDeleteTransactionData,
-  setGroupingVarForCharts,
-  getTransactionsOverviewLevel,
-  setTransactionsOverviewLevel,
-  setStatisticsOverviewLevel,
+ 
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Grid } from '@material-ui/core';
-import Item from '@mui/material/Grid';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -31,48 +19,26 @@ import { Box } from '@mui/material';
 import LeftPanelTransactions from './LeftPanelTransactions';
 import { useEffect, useState } from 'react';
 import RightPanelTransactions from './RightPanelTransactions';
-import { setFilter, setFilterVarForCharts } from '../../features/usersSlice';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { styled, alpha } from '@mui/material/styles';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
+import { getDeleteId, 
+  getTransactionsOverviewLevel, 
+  getOpenDeleteModal, 
+  getFilter,
+  setGroupingVar,
+  getGroupingVar,
+  setFilter,
+setTransactionsOverviewLevel,
+setOpenDeleteModal } from '../../features/transactionsSlice';
+import { useDeleteTransactionMutation, useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { getSelectedExchangeRate, setSelectedExchangeRate } from '../../features/exchangeRatesSlice';
+import { intToString } from '../utils/functions/helper-functions';
+import { 
+  setStatisticsOverviewLevel,  
+  setGroupingVarForCharts, 
+  setFilterVarForCharts,
+} from '../../features/statisticsSlice';
 
-const StyledMenu = styled((props) => (
-  <Menu
-    elevation={0}
-    anchorOrigin={{
-      vertical: 'bottom',
-      horizontal: 'right',
-    }}
-    transformOrigin={{
-      vertical: 'top',
-      horizontal: 'right',
-    }}
-    {...props}
-  />
-))(({ theme }) => ({
-  '& .MuiPaper-root': {
-    marginTop: theme.spacing(1),
-    minWidth: 180,
-    color: theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-    boxShadow:
-      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-    '& .MuiMenu-list': {
-      padding: '4px 0',
-    },
-    '& .MuiMenuItem-root': {
-      '& .MuiSvgIcon-root': {
-        fontSize: 18,
-        color: theme.palette.text.secondary,
-        marginRight: theme.spacing(1.5),
-      },
-      '&:active': {
-        backgroundColor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-      },
-    },
-  },
-}));
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -138,42 +104,38 @@ const Transactions = () => {
   const token = useSelector(getUserToken);
   //token id will be sent to dispatcher to make delete request
   const transactionId = useSelector(getDeleteId);
-  const deleteTransactionData = useSelector(getDeleteAPIMessage);
-
+  const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
+  const [deleteTransaction, result] = useDeleteTransactionMutation();
+  
   useEffect(() => {
-    //check if user token exists.
-    dispatch(userToken());
-    //redirect user in case token doesn't exist
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
 
-    if (deleteTransactionData.hasOwnProperty('message')) {
-      dispatch(fetchUserTransactions());
-      dispatch(cleanDeleteTransactionData());
-    }
-  }, [token.length, Object.values(deleteTransactionData).length]);
+  }, [token.length]);
 
   const redirectTosignin = () => {
     navigate('/');
     signoutUser();
-    //clean store
-    window.location.reload();
   };
 
+  const filter = useSelector(getFilter);
+  const groupingVar = useSelector(getGroupingVar);
   const transactionsOverviewLevel = useSelector(getTransactionsOverviewLevel);
+  const IDOfTransactionToDelete = useSelector(getDeleteId);
+
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
+  const {
+    data: userTransactions,
+    isSuccess,
+    isLoading,
+    isError,
+    error,
+  } = useFetchUserTransactionsQuery()
 
   const openDeleteModal = useSelector(getOpenDeleteModal);
-
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -236,7 +198,7 @@ const Transactions = () => {
 
   //modal window confirmation to delete transaction
   const confirmDeleteOfTransaction = () => {
-    dispatch(deleteTransaction(transactionId));
+    deleteTransaction(transactionId);
     dispatch(setOpenDeleteModal(false));
   };
 
@@ -360,7 +322,14 @@ const Transactions = () => {
         </Grid>
 
         <Grid item xs={12} md={8} lg={7} xl={7}>
-          <RightPanelTransactions />
+        {isLoading && <p>Loading...</p>}
+        {isSuccess && userTransactions.length > 0 && (
+          <RightPanelTransactions
+          data={userTransactions}
+          intToString={intToString}
+          currencyRate={selectedCurrencyRate}
+          filter={filter}
+          groupingVar={groupingVar} />)}
         </Grid>
       </Grid>
 

@@ -5,14 +5,15 @@ import {
   getFilterVarForCharts,
   getChartType,
   getGroupingVarForCharts,
-} from '../../features/usersSlice';
+} from '../../features/statisticsSlice';
 import _ from 'lodash';
 import date from 'date-and-time';
 import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { getUserTransactions } from '../../features/transactionsSlice';
-import { calculateIncomesAndExpenses } from '../utils/functions/HelperFunctions';
+import { calculateIncomesAndExpenses } from '../utils/functions/helper-functions';
+import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 
 const data = [
   {
@@ -30,23 +31,27 @@ const data = [
 ];
 
 const Plots = () => {
-  const userTransactions = useSelector(getUserTransactions);
+  const {data:userTransactions, isSuccess} = useFetchUserTransactionsQuery()
   const filterVarForCharts = useSelector(getFilterVarForCharts);
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const chartType = useSelector(getChartType);
 
+  
   const Plot = createPlotlyComponent(Plotly);
+
+ 
+  
 
   //function to calculate total incomes and expenses for selected period
   //and to display them in chart
   const calculateTotalIncomesAndExpenses = (type) => {
-    const result = userTransactions.data
+    const result = userTransactions
       .filter((item) =>
-        filterVarForCharts === 'week'
+        groupingVarForCharts === 'week'
           ? item.week === `Week ${DateTime.now().weekNumber}`
-          : filterVarForCharts === 'month'
+          : groupingVarForCharts === 'month'
           ? item.month === `${date.format(new Date(), 'MMM')}`
-          : filterVarForCharts === 'year'
+          : groupingVarForCharts === 'year'
           ? item.year === `${date.format(new Date(), 'YYYY')}`
           : null,
       )
@@ -56,12 +61,16 @@ const Plots = () => {
         group[type].push(item.amountInBAM);
         return group;
       }, {});
+    
+
 
     return type === 'income'
       ? result.income.reduce((acc, item) => acc + item, 0)
       : result.expense.reduce((acc, item) => acc + item, 0);
   };
-  return userTransactions.success && userTransactions.data.length > 0 ? (
+
+  console.log(groupingVarForCharts)
+  return isSuccess && userTransactions.length > 0 && (
     // display chart based on user selection.
     // chart type is stored in Redux store
     chartType !== 'pie' ? (
@@ -129,12 +138,7 @@ const Plots = () => {
         }}
       />
     )
-  ) : (
-    <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
-      Click on the tab transactions and start adding incomes or expenses to generate statistical
-      overview
-    </Typography>
-  );
+  ) 
 };
 
 export default Plots;

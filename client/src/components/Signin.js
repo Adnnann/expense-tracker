@@ -17,7 +17,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
-import { getUserTransactions, fetchUserTransactions } from '../features/transactionsSlice';
+import { useSigninUserMutation } from '../features/userAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -65,23 +65,24 @@ const Signin = () => {
     password: '',
   });
 
+  const [signInUser, result] = useSigninUserMutation();
+
   //if user has token (is logged) redirected to protected page
   useEffect(() => {
-    if (userSigninData.hasOwnProperty('token')) {
-      dispatch(fetchUserTransactions());
-      dispatch(userToken());
-      navigate('/dashboard');
+    if(result.isSuccess){
+      dispatch(userToken())
+      navigate('/dashboard')
     }
-  }, [userSigninData]);
+    
+  }, [result]);
 
   // send request to server to login user and in case there are errors collect error
   const clickSubmit = () => {
-    dispatch(fetchUserTransactions());
     const user = {
       email: values.email || undefined,
       password: values.password || undefined,
     };
-    dispatch(signinUser(user));
+    signInUser(user);
   };
 
   // get values from input fields

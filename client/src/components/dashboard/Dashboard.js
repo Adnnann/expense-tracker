@@ -18,9 +18,9 @@ import Button from '@material-ui/core/Button';
 import LeftSidePanel from './LeftSidePanel';
 import RightSidePanel from './RightSidePanel';
 import Loader from '../utils/Loader';
-import { getUserTransactions } from '../../features/transactionsSlice';
 import { getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
 import { getFilter } from '../../features/transactionsSlice';
+import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,20 +28,16 @@ const Dashboard = () => {
 
   const [inactiveUser, setInactiveUser] = useState(false);
   const filter = useSelector(getFilter);
-  const { loading, success, error, data } = useSelector(getUserTransactions);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
-  useEffect(() => {
-    dispatch(userToken());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
-  }, [token.length, filter.income, dispatch]);
+  
+  const {
+    data: userTransactionsData, 
+    isSuccess,
+    isFetching,
+    isError,
+    error,
+    isLoading
+  }  = useFetchUserTransactionsQuery();
 
   //set timeout for user inactivity
   const timeout = 1200000;
@@ -78,9 +74,9 @@ const Dashboard = () => {
       </Grid>
 
       <Grid item xs={12} md={8} lg={6} xl={6}>
-        {loading && <Loader />}
-        {error && <h1>{error}</h1>}
-        {success && <RightSidePanel data={data} selectedExchangeRate={selectedExchangeRate} />}
+        {isLoading && <Loader />}
+        {isError && <h1>{error}</h1>}
+        {isSuccess && <RightSidePanel data={userTransactionsData} selectedExchangeRate={selectedExchangeRate} />}
       </Grid>
       <Dialog open={inactiveUser}>
         <DialogTitle>Session expired</DialogTitle>

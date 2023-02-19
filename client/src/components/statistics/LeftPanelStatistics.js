@@ -1,6 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 import { Box } from '@mui/material';
-import { setChartType } from '../../features/usersSlice';
+import { setChartType } from '../../features/statisticsSlice';
 import { useDispatch } from 'react-redux';
 import { ButtonGroup, IconButton, makeStyles } from '@material-ui/core';
 import PieChartIcon from '@mui/icons-material/PieChart';
@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const LeftPanelStatistics = () => {
+const LeftPanelStatistics = (props) => {
   const dispatch = useDispatch();
 
   //chart select functions
@@ -32,6 +32,7 @@ const LeftPanelStatistics = () => {
   const lineChart = () => {
     dispatch(setChartType('scatter'));
   };
+
   return (
     <Box
       sx={{
@@ -45,17 +46,22 @@ const LeftPanelStatistics = () => {
       </Typography>
 
       {/* clicable images for user to select type of chart for statistical overview of data */}
-      <ButtonGroup>
+       <div style={{display:'flex'}}> 
+
+   
         <IconButton onClick={pieChart}>
-          <PieChartIcon sx={{ fontSize: '48px', color: 'green' }} />
+          <PieChartIcon sx={{ 
+          
+            fontSize: '48px', color: 'green' }} />
         </IconButton>
-        <IconButton onClick={barChart}>
-          <BarChartIcon sx={{ fontSize: '48px', color: 'purple' }} />
+        <IconButton onClick={barChart} >
+          <BarChartIcon  sx={{fontSize: '48px', color: 'purple' }} />
         </IconButton>
         <IconButton onClick={lineChart}>
-          <TimelineIcon sx={{ fontSize: '48px', color: 'aquamarine' }} />
+          <TimelineIcon  sx={{ fontSize: '48px', color: 'aquamarine' }} />
         </IconButton>
-      </ButtonGroup>
+       
+      </div>
     </Box>
   );
 };

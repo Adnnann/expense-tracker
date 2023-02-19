@@ -193,21 +193,8 @@ export const usersSlice = createSlice({
       state.currencyExchangeRate = action.payload;
     },
    
-    setFilterVarForCharts: (state, action) => {
-      state.filterVarForCharts = action.payload;
-    },
-    setGroupingVarForCharts: (state, action) => {
-      state.groupingVarForCharts = action.payload;
-    },
-    setChartType: (state, action) => {
-      state.chartType = action.payload;
-    },
-    setTransactionsOverviewLevel: (state, action) => {
-      state.transactionsOverviewLevel = action.payload;
-    },
-    setStatisticsOverviewLevel: (state, action) => {
-      state.statisticsOverviewLevel = action.payload;
-    },
+   
+  
     setDeleteAccountModal: (state, action) => {
       state.deleteAccountModal = action.payload;
     },
@@ -242,16 +229,6 @@ export const usersSlice = createSlice({
     [updateUserPassword.fulfilled]: (state, { payload }) => {
       return { ...state, updatedUserData: payload };
     },
-    // TRANSACTIONS
-    [createTransaction.fulfilled]: (state, { payload }) => {
-      return { ...state, addUserTransaction: payload };
-    },
-    [updateUserTransaction.fulfilled]: (state, { payload }) => {
-      return { ...state, updatedUserTransaction: payload };
-    },
-    [deleteTransaction.fulfilled]: (state, { payload }) => {
-      return { ...state, deleteTransaction: payload };
-    },
     [reloginUser.fulfilled]: (state, { payload }) => {
       return { ...state, loggedUser: payload, userDataToDisplay: payload.message };
     },
@@ -276,7 +253,7 @@ export const getCurrencyExchangeRates = (state) => state.users.currencyExchangeR
 
 
 export const getCurrency = (state) => state.users.currency;
-export const getGroupingVar = (state) => state.users.groupingVar;
+
 
 
 ///

@@ -7,9 +7,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import date from 'date-and-time';
-import { getCurrencyExchangeRate } from '../../features/usersSlice';
-import { useSelector } from 'react-redux';
-import { fetchUserTransactions, getUserTransactions } from '../../features/transactionsSlice';
 
 const RightSidePanel = ({ data, selectedExchangeRate }) => {
   //get dashboard data

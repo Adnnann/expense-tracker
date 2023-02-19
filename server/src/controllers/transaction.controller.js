@@ -4,13 +4,13 @@ import dbErrorHandlers from './helpers/dbErrorHandlers'
 import jwtDecode from 'jwt-decode'
 
 const createTransaction = (req, res) => {
-console.log(req)
+
     const transaction = new Transaction(req.body) 
     transaction.save((err)=>{
         if(err){
-            return res.send({error: dbErrorHandlers.getErrorMessage(err)})
+            return res.status(400).json(dbErrorHandlers.getErrorMessage(err))
         }
-        return res.send({message: 'Transaction successfuly created'})
+        return res.status(200).send({message: 'Transaction successfuly created'})
     })
 }
 const getTransactions = (req, res) => {
@@ -23,7 +23,7 @@ const getTransactions = (req, res) => {
     .sort({"created":-1})
     .exec((err, transactions) => {
         if(err){
-            return res.send({error:dbErrorHandlers.getErrorMessage(err)})
+            return res.status(400).json({error:dbErrorHandlers.getErrorMessage(err)})
         }
        return res.send({message:transactions})
     })
@@ -40,9 +40,9 @@ const updateTransaction = (req, res, next) => {
     transaction.updated = Date.now()
     transaction.save(err=>{
         if(err){
-            return res.send({error: dbErrorHandlers.getErrorMessage(err)})
+            return res.status(400).json(dbErrorHandlers.getErrorMessage(err))
         }
-        res.send({message: 'Data updated'})
+        return res.send({message: 'Data updated'})
     })
 }
 

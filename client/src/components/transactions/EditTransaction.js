@@ -24,7 +24,9 @@ import {
   getUserTransactionData,
   cleanTransactionUpdatedData,
   updateUserTransaction,
-  getUpdatedUserTransaction, } from '../../features/transactionsSlice';
+  getUpdatedUserTransaction,
+  getTransactionToEdit, } from '../../features/transactionsSlice';
+import { useFetchUserTransactionsQuery, useUpdateUserTransactionMutation } from '../../features/transactionsAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -69,65 +71,24 @@ const useStyles = makeStyles((theme) => ({
 
 const EditTransaction = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const transactionData = useSelector(getUserTransactionData);
-  const updatedUserTransactionData = useSelector(getUpdatedUserTransaction);
-  const userTransactions = useSelector(getUserTransactions);
+  const transactionToEdit = useSelector(getTransactionToEdit)
+
   const navigate = useNavigate();
   const token = useSelector(getUserToken);
   const [values, setValues] = useState({
-    title: '',
-    amount: '',
-    currency: '',
+    title: transactionToEdit[0].title,
+    amount: transactionToEdit[0].amountInBAM,
+    currency: transactionToEdit[0].currency,
   });
 
   const params = useParams();
 
+  const [updateUserTransaction, result] = useUpdateUserTransactionMutation()
+  
+
   useEffect(() => {
-    dispatch(fetchUserTransactions());
-    //check if user token exists.
-    dispatch(userToken());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
-
-    //Call to fetch single transaction would load with delay
-    //so I revised the logic and solved the problem
-    userTransactions.transactions
-      .filter((item) => item._id === params.transactionId)
-      .map((item) => {
-        setValues({
-          title: item.title,
-          amount:
-            item.currency === 'EUR'
-              ? item.amountInEUR
-              : item.currency === 'USD'
-              ? item.amountInUSD
-              : item.currency === 'BAM'
-              ? item.amountInBAM
-              : '',
-          currency: item.currency,
-        });
-      });
-
-    //if data updated redirect to transactions
-    if (updatedUserTransactionData.hasOwnProperty('message')) {
-      dispatch(cleanTransactionUpdatedData());
-      navigate('/transactions');
-    }
-  }, [
-    dispatch,
-    params.transactionId,
-    transactionData.length,
-    updatedUserTransactionData.message,
-    token.length,
-  ]);
+    result.isSuccess && navigate(`/transactions`)
+  }, [result]);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
@@ -144,7 +105,7 @@ const EditTransaction = () => {
     switch (transaction.currency) {
       case 'BAM':
         transaction = {
-          params: params.transactionId,
+          params: transactionToEdit[0]._id,
           title: values.title || undefined,
           amountInBAM: Number(values.amount) || undefined,
           amountInUSD: Number((values.amount * 0.58).toFixed(2)) || undefined,
@@ -154,7 +115,7 @@ const EditTransaction = () => {
         break;
       case 'USD':
         transaction = {
-          params: params.transactionId,
+          params: transactionToEdit[0]._id,
           title: values.title || undefined,
           amountInBAM: Number((values.amount * 1.72).toFixed(2)) || undefined,
           amountInUSD: Number(values.amount),
@@ -164,7 +125,7 @@ const EditTransaction = () => {
         break;
       case 'EUR':
         transaction = {
-          params: params.transactionId,
+          params: transactionToEdit[0]._id,
           title: values.title || undefined,
           amountInBAM: Number((values.amount * 1.96).toFixed(2)) || undefined,
           amountInUSD: Number((values.amount * 1.14).toFixed(2)) || undefined,
@@ -174,7 +135,9 @@ const EditTransaction = () => {
         break;
     }
 
-    dispatch(updateUserTransaction(transaction));
+    console.log(transaction)
+    updateUserTransaction(transaction)
+    //dispatch(updateUserTransaction(transaction));
   };
 
   const cancel = () => {
@@ -206,12 +169,10 @@ const EditTransaction = () => {
           <br />
           <br />
 
-          {updatedUserTransactionData.hasOwnProperty('error') && (
+          {result.isError && (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              {updatedUserTransactionData.error.split(':')[2]
-                ? updatedUserTransactionData.error.split(':')[2]
-                : updatedUserTransactionData.error}
+              {result.error.message}
             </Typography>
           )}
 

@@ -7,30 +7,28 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import date from 'date-and-time';
-import {
-  getFilter,
-  getGroupingVar,
-  setDeleteId,
-  setOpenDeleteModal,
-} from '../../features/usersSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useNavigate } from 'react-router';
 import { DateTime } from 'luxon';
-import {
-  getCurrencyExchangeRates,
-  getSelectedExchangeRate,
-} from '../../features/exchangeRatesSlice';
-import { getUserTransactions } from '../../features/transactionsSlice';
-const RightPanelTransactions = () => {
+import { 
+  getFilter, 
+  setDeleteId, 
+  setOpenDeleteModal, 
+  setTransactionToEdit, 
+  getTransactionToEdit 
+} from '../../features/transactionsSlice';
+
+const RightPanelTransactions = ({
+  data, 
+  intToString, 
+  currencyRate,
+  groupingVar,
+  filter}) => {
   const dispatch = useDispatch();
-  const filter = useSelector(getFilter);
-  const userTransactions = useSelector(getUserTransactions);
-  console;
-  const groupingVar = useSelector(getGroupingVar);
   const navigate = useNavigate();
-  const selectedCurrencyExchangeRate = useSelector(getSelectedExchangeRate);
+  
   //define table columns
   const columns = [
     {
@@ -70,42 +68,22 @@ const RightPanelTransactions = () => {
   };
 
   // use abbreviation to display big numbers
-  const intToString = (num) => {
-    num = num.toString().replace(/[^0-9.]/g, '');
-    if (num < 1000) {
-      return num;
-    }
-    let si = [
-      { v: 1e3, s: 'K' },
-      { v: 1e6, s: 'M' },
-      { v: 1e9, s: 'B' },
-      { v: 1e12, s: 'T' },
-      { v: 1e15, s: 'P' },
-      { v: 1e18, s: 'E' },
-    ];
-    let index;
-    for (index = si.length - 1; index > 0; index--) {
-      if (num >= si[index].v) {
-        break;
-      }
-    }
-    return (num / si[index].v).toFixed(2).replace(/\.0+$|(\.[0-9]*[1-9])0+$/, '$1') + si[index].s;
-  };
 
   const editTransaction = (id) => {
+    dispatch(setTransactionToEdit(data.filter(item=>item._id === id)));
     navigate(`/transaction/${id}`);
   };
 
   const deleteTransaction = (id) => {
+    console.log(id)
     dispatch(setDeleteId(id));
     dispatch(setOpenDeleteModal(true));
   };
 
-  if (userTransactions.success && userTransactions?.data && userTransactions.data.length !== 0) {
     //use dateDiff on returned date values from database
-    userTransactions.data
-      .filter((item) => item.type === filter.income || item.type === filter.expense)
-      //Filter data based on user input. Dispatch setGroupingVar action
+    data
+    .filter((item) => item.type === filter.income || item.type === filter.expense)
+      // Filter data based on user input. Dispatch setGroupingVar action
       // will set desired filter
       .filter((item) =>
         groupingVar === 'day'
@@ -132,8 +110,8 @@ const RightPanelTransactions = () => {
           <span style={{ color: item.type === 'income' ? 'green' : 'red' }}>
             {' '}
             {item.type === 'income'
-              ? `+ ${intToString((item.amountInBAM * selectedCurrencyExchangeRate).toFixed(2))}`
-              : `- ${intToString((item.amountInBAM * selectedCurrencyExchangeRate).toFixed(2))}`}
+              ? `+ ${intToString((item.amountInBAM * currencyRate).toFixed(2))}`
+              : `- ${intToString((item.amountInBAM * currencyRate).toFixed(2))}`}
           </span>
         );
 
@@ -157,13 +135,10 @@ const RightPanelTransactions = () => {
         // generate rows
         rows.push(createData(firstRow, secondRow, thirdRow));
       });
-  }
+
 
   return (
     <Paper sx={{ width: '98%', overflow: 'hidden', overflowX: 'none', wordBreak: 'break-all' }}>
-      {userTransactions.success && userTransactions.data.length === 0 ? (
-        'Start adding transactions'
-      ) : userTransactions.success && userTransactions.data.length > 0 ? (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableHead>
@@ -206,9 +181,6 @@ const RightPanelTransactions = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      ) : (
-        ''
-      )}
     </Paper>
   );
 };

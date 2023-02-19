@@ -22,6 +22,8 @@ import date from 'date-and-time';
 import { DateTime } from 'luxon';
 import { fetchUserTransactions } from '../../features/transactionsSlice';
 import { createTransaction, getTransactionData } from '../../features/transactionsSlice';
+import {useCreateTransactionMutation} from '../../features/transactionsAPI';
+
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -97,15 +99,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const AddNewIncome = () => {
+
+  const [addTransaction, result] = useCreateTransactionMutation();
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const transactionData = useSelector(getTransactionData);
   const token = useSelector(getUserToken);
 
+  console.log('token', token);
+
+
   const [currency, setCurrency] = useState('BAM');
   const [values, setValues] = useState({
-    userId: jwtDecode(token.message)._id,
+    userId: 1, //jwtDecode(token.message)._id,
     title: '',
     amount: '',
     currency: '',
@@ -117,24 +125,10 @@ const AddNewIncome = () => {
   });
 
   useEffect(() => {
-    //check if user token exists.
-    dispatch(userToken());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
-    //if addedd successfuly redirect to transactions
-    if (transactionData.hasOwnProperty('message')) {
-      dispatch(cleanTransactionData());
-      dispatch(fetchUserTransactions());
+    if (result.isSuccess) {
       navigate('/transactions');
     }
-  }, [transactionData.message, token.length]);
+  }, [result]);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
@@ -208,7 +202,8 @@ const AddNewIncome = () => {
         };
         break;
     }
-    dispatch(createTransaction(income));
+    //use mutation to add new income
+    addTransaction(income);
   };
 
   return (
@@ -264,10 +259,10 @@ const AddNewIncome = () => {
 
         {
           //display error returned from server
-          transactionData.hasOwnProperty('error') && (
+          result.isError && (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              {transactionData.error}
+              {result.error.data}
             </Typography>
           )
         }

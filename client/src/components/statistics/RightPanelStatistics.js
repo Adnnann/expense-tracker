@@ -5,7 +5,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
-import { getGroupingVarForCharts, getFilterVarForCharts } from '../../features/usersSlice';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import date from 'date-and-time';
@@ -15,9 +14,14 @@ import {
   getSelectedExchangeRate,
 } from '../../features/exchangeRatesSlice';
 import { getUserTransactions } from '../../features/transactionsSlice';
-
+import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { 
+  getStatisticsOverviewLevel, 
+  getFilterVarForCharts, 
+  getGroupingVarForCharts
+ } from '../../features/statisticsSlice';
 const RightPanelSatistics = () => {
-  const userTransactions = useSelector(getUserTransactions);
+  const {data:userTransactions, isSuccess} = useFetchUserTransactionsQuery()
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const filterVarForCharts = useSelector(getFilterVarForCharts);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
@@ -53,33 +57,31 @@ const RightPanelSatistics = () => {
 
   const rows = [];
 
-  if (userTransactions.success && userTransactions.data.length > 0) {
-    _.chain(userTransactions.data)
+  if (isSuccess && userTransactions.length > 0) {
+    _.chain(userTransactions)
       // Filters added based on user input. When user click on tab transaction and selects one option (week, month, or year) filter is stored in Reduc store and
       //data are filtered in accordance with user input
 
       // filters can be week, month and year
       .filter(
-        filterVarForCharts === 'week'
+        groupingVarForCharts === 'week'
           ? { week: `Week ${DateTime.now().weekNumber}` }
           : //grouping var should be chnaged with filterVarForCharts
-          filterVarForCharts === 'month'
+          groupingVarForCharts === 'month'
           ? { month: `${date.format(new Date(), 'MMM')}` }
-          : filterVarForCharts === 'year'
+          : groupingVarForCharts === 'year'
           ? { year: `${date.format(new Date(), 'YYYY')}` }
           : null,
       )
       .orderBy(['created'], ['desc'])
       .groupBy((item) =>
-        groupingVarForCharts === 'day'
+        groupingVarForCharts === 'week' 
           ? `${item.day}`
-          : groupingVarForCharts === 'week'
-          ? `${item.week}${','}`
           : groupingVarForCharts === 'month'
-          ? `${item.month}${','}`
+          ? `${item.week}`
           : groupingVarForCharts === 'year'
-          ? `${item.year}${','}`
-          : '',
+          ? `${item.month}`
+          : ''
       )
       //below part is added to enable me to get income and expense sum for each level of disaggregation of
       //data: day, week, month or year and to be able to loop through it
@@ -122,7 +124,7 @@ const RightPanelSatistics = () => {
         width: { xl: '40%' },
       }}
     >
-      {userTransactions.data.length > 0 && userTransactions.success ? (
+      {isSuccess && userTransactions.length > 0 ? (
         <TableContainer sx={{ maxHeight: 200 }}>
           <Table stickyHeader aria-label='sticky table'>
             <TableBody>

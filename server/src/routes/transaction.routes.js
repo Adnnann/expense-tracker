@@ -9,9 +9,9 @@ router.route('/api/transaction')
 .get(transactionCtrl.getTransactions)
 
 router.route('/api/transaction/:transactionId')
-.get(authCtrl.hasAuthorization, transactionCtrl.getTransaction)
-.put(authCtrl.hasAuthorization, transactionCtrl.updateTransaction)
-.delete(authCtrl.hasAuthorization, transactionCtrl.removeTransaction)
+.get(transactionCtrl.getTransaction)
+.put(transactionCtrl.updateTransaction)
+.delete(transactionCtrl.removeTransaction)
 
 router.param('transactionId', transactionCtrl.transactionByID)
 
