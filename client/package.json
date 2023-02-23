@@ -21,7 +21,7 @@
     "focus-trap": "^6.7.3",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
-    "luxon": "^2.3.1",
+    "luxon": "^2.5.2",
     "moment": "^2.29.1",
     "mongoose-beautiful-unique-validation": "^7.1.1",
     "plotly.js": "^2.9.0",
