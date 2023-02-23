@@ -21,12 +21,16 @@ const LeftPanelTransactions = () => {
   const EURandUSDExchangeRates = useSelector(getCurrencyExchangeRates);
   const selectedCurrencyRate = useSelector(getSelectedExchangeRate)
   const groupingVar = useSelector(getGroupingVar);
+const [skip, setSkip] = useState(true)
 
   const {
     data: userTransactions, 
     isSuccess, 
     isError, 
-    isLoading} = useFetchUserTransactionsQuery()
+    isLoading
+  } = useFetchUserTransactionsQuery({
+    skip: skip
+  })
 
 
   
@@ -44,6 +48,8 @@ const LeftPanelTransactions = () => {
         break;
     }
   };
+
+  console.log('test', isSuccess, userTransactions)
 
   return (
     <Box

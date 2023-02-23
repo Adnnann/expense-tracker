@@ -4,6 +4,8 @@ import User from '../models/user.model'
 import config from '../config/config'
 
 const signin = (req, res) => {
+
+    console.log(req.body)
     User.findOne({'email': req.body.email},(err, user) => {
         if(err || !user){
             return res.send({error: req.cookies})
@@ -39,11 +41,6 @@ const requireSignin = expressjwt({
     userProperty: 'auth',
 })
 
-const hasAuthorization = (req, res, next) => {
-    if(!req.cookies.userJwtToken){
-      return res.send({error:'User not authorized!'})
-    }
-}
 
-export default {signin, signout, hasAuthorization, requireSignin}
+export default {signin, signout }
 

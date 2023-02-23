@@ -13,6 +13,8 @@ import {
   userToken,
   getUserToken,
   cleanRegisteredUserData,
+  setUserDataToDisplay,
+  
 } from '../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -70,6 +72,7 @@ const Signin = () => {
   //if user has token (is logged) redirected to protected page
   useEffect(() => {
     if(result.isSuccess){
+      dispatch(setUserDataToDisplay(result.data.user));
       dispatch(userToken())
       navigate('/dashboard')
     }

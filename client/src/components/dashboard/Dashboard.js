@@ -4,6 +4,7 @@ import {
   userToken,
   signoutUser,
   cleanStore,
+  setUserDataToDisplay,
 } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -19,25 +20,36 @@ import LeftSidePanel from './LeftSidePanel';
 import RightSidePanel from './RightSidePanel';
 import Loader from '../utils/Loader';
 import { getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
-import { getFilter } from '../../features/transactionsSlice';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserQuery } from '../../features/userAPI';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector(getUserToken);
-
   const [inactiveUser, setInactiveUser] = useState(false);
-  const filter = useSelector(getFilter);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
-  
+ 
+
   const {
     data: userTransactionsData, 
     isSuccess,
     isFetching,
     isError,
     error,
-    isLoading
+    isLoading,
   }  = useFetchUserTransactionsQuery();
+console.log(error?.status)
+  useEffect(() => {
+   
+    if (error?.status) {
+      console.log(error)
+      navigate('/');
+      return
+    }
+  }, [error]);
+
+ 
+
+
 
   //set timeout for user inactivity
   const timeout = 1200000;
@@ -74,9 +86,9 @@ const Dashboard = () => {
       </Grid>
 
       <Grid item xs={12} md={8} lg={6} xl={6}>
-        {isLoading && <Loader />}
-        {isError && <h1>{error}</h1>}
-        {isSuccess && <RightSidePanel data={userTransactionsData} selectedExchangeRate={selectedExchangeRate} />}
+        {isLoading && !error?.data && <Loader />}
+        {isError && !error?.data && <h1>{error}</h1>}
+        {isSuccess && <RightSidePanel data={userTransactionsData} selectedExchangeRate={selectedExchangeRate} />} 
       </Grid>
       <Dialog open={inactiveUser}>
         <DialogTitle>Session expired</DialogTitle>

@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const transactionsAPI = createApi({
     reducerPath: "transactionsAPI",
     baseQuery: fetchBaseQuery({ baseUrl: "/" }),
-    tagTypes: ["Transaction"],
+    tagTypes: ["User","Transaction"],
+    //keepUnusedDataFor: 0,
     endpoints: (builder) => ({
         fetchUserTransactions: builder.query({
             query: () => "api/transaction",

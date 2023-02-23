@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import date from 'date-and-time';
 
 export const intToString = (num) => {
-  console.log(num)
+
   if (num < 0) {
     num = `-${num.toString().replace(/[^0-9.]/g, '')}`;
   } else {
@@ -30,7 +30,6 @@ export const intToString = (num) => {
   return (num / si[index].v).toFixed(2).replace(/\.0+$|(\.[0-9]*[1-9])0+$/, '$1') + si[index].s;
 };
 
-console.log(intToString(-100))
 export const calculateTotal = (data, groupingVar, currencyRate) => {
   //if no incomes are present then return 0
   //if no expenses are present then return 0
@@ -68,15 +67,52 @@ export const calculateTotal = (data, groupingVar, currencyRate) => {
 
   const num = income - expense
 
-  return intToString(num)
+  return intToString(num * currencyRate)
 
 }
+
+  //function to calculate total incomes and expenses for selected period
+  //and to display them in chart
+  export const calculateTotalIncomesAndExpenses = (data, groupingVarForCharts, type) => {
+    console.log('data',data)
+    
+    const result = data
+      .filter((item) =>
+        groupingVarForCharts === 'week'
+          ? item.week === `Week ${DateTime.now().weekNumber}`
+          : groupingVarForCharts === 'month'
+          ? item.month === `${date.format(new Date(), 'MMM')}`
+          : groupingVarForCharts === 'year'
+          ? item.year === `${date.format(new Date(), 'YYYY')}`
+          : null,
+      )
+      .reduce((group, item) => {
+        const { type } = item;
+        group[type] = group[type] ?? [];
+        group[type].push(item.amountInBAM);
+        return group;
+      }, {});
+    console.log('resu;t',result)
+    if(result.income === undefined && result.expense === undefined){
+      return (result.income = 0, result.expense = 0)
+    }else if(result.expense === undefined){
+      return result.expense = 0
+    }else if(result.expense === undefined){
+     return (result.income = 0, result.expense = 0)
+    }else{
+      return type === 'income'
+      ? result.income.reduce((acc, item) => acc + item, 0)
+      : result.expense.reduce((acc, item) => acc + item, 0);
+    }
+
+
+  };
+
 export const calculateIncomesAndExpenses = (data, type, groupingVar, currencyRate) => {
-    console.log(data, type, groupingVar, currencyRate)
   //if no incomes are present then return 0
     //if no expenses are present then return 0
     //if both are present then return income - expenses
-    return intToString(data.filter(item=>item.type === type).length === 0 ? 0 
+    return console.log(intToString(data.filter(item=>item.type === type).length === 0 ? 0 
     : data
     .filter(item=>item.type === type)
     .filter(item => 
@@ -90,5 +126,5 @@ export const calculateIncomesAndExpenses = (data, type, groupingVar, currencyRat
                     ? item.year === `${date.format(new Date(), 'YYYY')}` 
                     : item === item,
                 )
-    .reduce((acc, item) => acc + item.amountInBAM, 0) * currencyRate);
+    .reduce((acc, item) => acc + item.amountInBAM, 0) * currencyRate));
   }

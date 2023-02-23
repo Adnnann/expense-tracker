@@ -37,6 +37,9 @@ export const transactionsSlice = createSlice({
     setOpenDeleteModal: (state, action) => {
       state.openDeleteModal = action.payload;
     },
+    setGroupingVar: (state, action) => {
+      state.groupingVar = action.payload;
+    }
   }, 
 });
 

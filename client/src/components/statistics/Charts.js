@@ -6,70 +6,19 @@ import {
   getChartType,
   getGroupingVarForCharts,
 } from '../../features/statisticsSlice';
-import _ from 'lodash';
-import date from 'date-and-time';
 import { useSelector } from 'react-redux';
-import { Typography } from '@mui/material';
-import { DateTime } from 'luxon';
-import { getUserTransactions } from '../../features/transactionsSlice';
-import { calculateIncomesAndExpenses } from '../utils/functions/helper-functions';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-
-const data = [
-  {
-    name: '2010',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: '2011',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-];
+import { calculateTotalIncomesAndExpenses } from '../utils/functions/helper-functions';
 
 const Plots = () => {
   const {data:userTransactions, isSuccess} = useFetchUserTransactionsQuery()
-  const filterVarForCharts = useSelector(getFilterVarForCharts);
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const chartType = useSelector(getChartType);
 
   
   const Plot = createPlotlyComponent(Plotly);
 
- 
-  
-
-  //function to calculate total incomes and expenses for selected period
-  //and to display them in chart
-  const calculateTotalIncomesAndExpenses = (type) => {
-    const result = userTransactions
-      .filter((item) =>
-        groupingVarForCharts === 'week'
-          ? item.week === `Week ${DateTime.now().weekNumber}`
-          : groupingVarForCharts === 'month'
-          ? item.month === `${date.format(new Date(), 'MMM')}`
-          : groupingVarForCharts === 'year'
-          ? item.year === `${date.format(new Date(), 'YYYY')}`
-          : null,
-      )
-      .reduce((group, item) => {
-        const { type } = item;
-        group[type] = group[type] ?? [];
-        group[type].push(item.amountInBAM);
-        return group;
-      }, {});
-    
-
-
-    return type === 'income'
-      ? result.income.reduce((acc, item) => acc + item, 0)
-      : result.expense.reduce((acc, item) => acc + item, 0);
-  };
-
-  console.log(groupingVarForCharts)
+   
   return isSuccess && userTransactions.length > 0 && (
     // display chart based on user selection.
     // chart type is stored in Redux store
@@ -81,8 +30,8 @@ const Plots = () => {
             label: ['Incomes'],
             textinfo: 'label',
             hoverinfo: 'label',
-            x: [calculateTotalIncomesAndExpenses('income')],
-            y: [calculateTotalIncomesAndExpenses('income')],
+            x: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income')],
+            y: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income')],
             showlegend: false,
             marker: { color: 'green' },
             name: 'Income',
@@ -91,8 +40,8 @@ const Plots = () => {
             showlegend: false,
             type: chartType,
             textinfo: 'percent+label',
-            x: [calculateTotalIncomesAndExpenses('expense')],
-            y: [calculateTotalIncomesAndExpenses('expense')],
+            x: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense')],
+            y: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense')],
             marker: { color: 'red' },
             name: 'Expense',
           },
@@ -106,8 +55,8 @@ const Plots = () => {
         data={[
           {
             values: [
-              calculateTotalIncomesAndExpenses('income'),
-              calculateTotalIncomesAndExpenses('expense'),
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income'),
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense'),
             ],
             type: 'pie',
             labels: ['Incomes', 'Expenses'],

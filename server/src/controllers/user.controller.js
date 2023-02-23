@@ -16,9 +16,18 @@ import jwtDecode from 'jwt-decode'
 }
 
 const read = (req, res) => {
-    req.profile.hashed_password = undefined
-    req.profile.salt = undefined
-    res.status(200).json(req.profile)
+
+    const token = req.cookies.userJwtToken
+    const id = jwtDecode(token)._id
+ 
+    User.findById(id, (err, user) => {
+        if(err || !user){
+            return res.status(400).json({error: 'User not found'})
+        }
+        user.hashed_password = undefined
+        user.salt = undefined
+        return res.status(200).json(user)
+    })
 }
 
 const update = (req, res, next) => {
@@ -70,11 +79,33 @@ const reloginUser = (req, res) => {
        
 }
 
+const test = (req, res) => {
+
+    const token = req.cookies.userJwtToken
+    const id = jwtDecode(token)._id
+
+    if(!token) {
+        console.log('no token')
+        return res.status(400).json('Unathorized')
+    }
+    User.findOne({'_id': id},(err, user) => {
+      
+        if(err || !user){       
+            return res.send({error: 'User not found'})
+        }
+     
+        return res.send({message:user})
+    })
+       
+}
+
+
 export default {
     create,
     read, 
     update,
     remove,
     reloginUser,
+    test,
     userByID
 }

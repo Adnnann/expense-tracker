@@ -21,7 +21,7 @@ import {
   setFilterVarForCharts
 } from '../../features/statisticsSlice';
 import { setTransactionsOverviewLevel } from '../../features/transactionsSlice';
-
+import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: 'auto',
@@ -42,12 +42,29 @@ const Statistics = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const token = useSelector(getUserToken);
+  const [skip, setSkip] = useState(false);
+
+  const {
+    data: userTransactions,
+    isSuccess,
+    isLoading,
+    isError,
+    error,
+  } = useFetchUserTransactionsQuery( undefined, {
+    skip: skip,
+  });
 
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
+
+  useEffect(() => {
+    if (error?.data) {
+      navigate('/');
+    }
+  }, [error]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -111,6 +128,7 @@ const Statistics = () => {
   const buttons = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
 
   return (
+    
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={4} lg={4} xl={4}>
         {/* Left side menu buttons */}
@@ -151,7 +169,8 @@ const Statistics = () => {
           </ButtonGroup>
         </Box>
       </Grid>
-
+      {isSuccess && userTransactions.length > 0 && (
+     <>
       <Grid item xs={12} md={12} lg={12} xl={12}>
         <LeftPanelStatistics />
       </Grid>
@@ -172,6 +191,8 @@ const Statistics = () => {
       <Grid item xs={12} md={9} lg={9} xl={12}>
         <RightPanelStatistics />
       </Grid>
+      </>
+      )}
     </Grid>
   );
 };

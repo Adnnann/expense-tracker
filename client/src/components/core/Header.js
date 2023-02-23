@@ -11,6 +11,7 @@ import {
   getUserToken,
   getSavedExchangeRates,
   saveExchangeRatesInDB,
+  getUserDataToDisplay,
 } from '../../features/usersSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -29,7 +30,8 @@ import {
   fetchCurrencyExchangeRates,
   getCurrencyExchangeRates,
 } from '../../features/exchangeRatesSlice';
-
+import { useFetchUserQuery, useIsSignedUserQuery, useSignoutUserMutation } from '../../features/userAPI';
+import { setUserDataToDisplay } from '../../features/usersSlice';
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -79,24 +81,38 @@ const Header = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [signOut, result] = useSignoutUserMutation();
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [anchorElUser, setAnchorElUser] = useState(null);
-  const loggedUser = useSelector(getUserSigninData);
-  const userToken = useSelector(getUserToken);
- 
+
   const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
   const savedExchangeRates = useSelector(getSavedExchangeRates);
+  const userDataForDisplaying = useSelector(getUserDataToDisplay)
+ 
+
+  const pages = [
+    '/',
+    '/dashboard',
+    '/transactions',
+    '/statistics',
+    '/editProfile',
+    '/editPassword',
+    '/deleteAccount',
+    '/addNewIncome',
+    '/addNewExpense',
+    '/editTransaction',
+  ]
+
+  const requestedPage = window.location.pathname;
+
+
+
 
   useEffect(() => {
-    if (Object.values(loggedUser).length === 0 && userToken?.message && !loggedUser?.error) {
-      dispatch(reloginUser(userToken.message));
-    }
 
-    if (Object.keys(currencyExchangeRates).length === 0) {
-      dispatch(fetchCurrencyExchangeRates());
-    }
+    // if (!pages.includes(requestedPage)) {
+    //   navigate('/')
+    // }
 
     if (currencyExchangeRates?.data?.USD > 0 && Object.values(savedExchangeRates).length === 0) {
       dispatch(
@@ -107,13 +123,11 @@ const Header = () => {
           },
         }),
       );
-    }
+    
+    navigate('/dashboard');
+  }
   }, [
-    loggedUser.user,
-    userToken,
-    currencyExchangeRates,
-    savedExchangeRates,
-    savedExchangeRates,
+  
   ]);
 
   const open = Boolean(anchorEl);
@@ -127,7 +141,7 @@ const Header = () => {
   };
 
   const editPassword = () => {
-    navigate(`/editPassword/${userData._id}`);
+    navigate(`/editPassword/${userDataForDisplaying._id}`);
   };
 
   const deleteAccount = () => {
@@ -137,7 +151,7 @@ const Header = () => {
   const date = new Date();
 
   const signout = () => {
-    dispatch(signoutUser());
+    signOut()
     dispatch(cleanStore());
     navigate('/');
   };
@@ -153,23 +167,24 @@ const Header = () => {
   const menuButtons = ['Edit Profile', 'Edit Password', 'Delete Account'];
   const menuFunctions = [editProfile, editPassword, deleteAccount];
   return (
+    pages.includes(requestedPage) && (
     <AppBar position='static'>
-      {/* {Object.keys(displayUserName).length !== 0 ? ( */}
+      {userDataForDisplaying?.firstName  && (
         <span
           style={{ display: 'block', marginLeft: '10px' }}
           sx={{ display: { xs: 'block', md: 'none' } }}
         >
           <Typography component='p' sx={{ display: { xs: 'block', md: 'none' } }}>
-            Hello, NEED TO ADD DATA HERE
+            Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
           </Typography>
           <Typography
             component='p'
             style={{ fontSize: '9px' }}
             sx={{ display: { xs: 'block', md: 'none' } }}
           >
-            {/* {dateFormat(date, 'dddd, dd mmmm')} */}
+            {dateFormat(date, 'dddd, dd mmmm')} 
           </Typography>
-        </span>
+        </span>)}
 
 
       <Toolbar disableGutters>
@@ -221,6 +236,7 @@ const Header = () => {
               open={open}
               handleClose={handleClose}
               anchorEl={anchorEl}
+              color='white'
             />
             <Button
               variant='primary'
@@ -233,10 +249,10 @@ const Header = () => {
         )}
       </Toolbar>
 
-      {/* {Object.keys(displayUserName).length !== 0 ? ( */}
+      {userDataForDisplaying?.firstName && (
         <span style={{ marginLeft: '10px' }} sx={{ display: { xs: 'none', md: 'block' } }}>
           <Typography variant='h6' sx={{ display: { xs: 'none', md: 'block' } }}>
-            Hello, {/*displayUserName.firstName*/} NEED TO ADD DATA HERE
+            Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
           </Typography>
           <Typography
             component='p'
@@ -246,8 +262,8 @@ const Header = () => {
             {dateFormat(date, 'dddd, dd mmmm')}
           </Typography>
         </span>
-      {/* ) : null} */}
-    </AppBar>
+      )}
+    </AppBar>)
   );
 };
 

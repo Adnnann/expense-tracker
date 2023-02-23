@@ -3,14 +3,24 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/dist/query/react";
 export const userAPI = createApi({
     reducerPath: "userAPI",
     baseQuery: fetchBaseQuery({ baseUrl: "/" }),
-    tagTypes: ["User"],
+    tagTypes: ["User","Transaction"],
+    keepUnusedDataFor: 0,
     endpoints: (builder) => ({
         fetchUser: builder.query({
-            query: () => "api/user",
+            query: () => "api/users",
             providesTags:['User'],
             transformResponse: (response, meta, arr) => {
-                return response.message;
+                return response;
             }
+        }),
+        isSignedUser: builder.query({
+            query: () => "/auth/isSigned",
+            providesTags:['User'],
+            transformResponse: (response, meta, arr) => {
+                return response;
+            },
+          
+           
         }),
         createUser: builder.mutation({
             query: (user) => ({
@@ -18,6 +28,9 @@ export const userAPI = createApi({
                 method: "POST",
                 body: user,
             }),
+            transformResponse: (response, meta, arr) => {
+                return response;
+            },
             invalidatesTags: ['User']
         }),
         updateUser: builder.mutation({
@@ -28,6 +41,24 @@ export const userAPI = createApi({
                     firstName: user.firstName,
                     lastName: user.lastName,
                     nickname: user.nickname,
+                },
+            }),
+            invalidatesTags: ['User']
+        }),
+        checkPassword: builder.mutation({
+            query: (userData) => ({
+                url: "/auth/signin",
+                method: "POST",
+                body: userData,
+            }),
+            invalidatesTags: ['User']
+        }),
+        updatePassword: builder.mutation({
+            query: (user) => ({
+                url: `api/user/${user.params}`,
+                method: "PUT",
+                body: {
+                    password: user.password,
                 },
             }),
             invalidatesTags: ['User']
@@ -45,14 +76,13 @@ export const userAPI = createApi({
                 method: "POST",
                 body: userData,
             }),
-            invalidatesTags: ['User']
         }),
         signoutUser: builder.mutation({
             query: () => ({
                 url: "/auth/signout",
                 method: "POST",
             }),
-            invalidatesTags: ['User']
+            invalidatesTags: ['User','Transaction']
         }),
         userToken: builder.mutation({
             query: () => ({
@@ -81,6 +111,9 @@ export const {
     useSignoutUserMutation,
     useUserTokenMutation,
     useReloginUserMutation,
+    useCheckPasswordMutation,
+    useUpdatePasswordMutation,
+    useIsSignedUserQuery,
 } = userAPI;
 
 

@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router';
 import { Typography } from '@material-ui/core';
 import { Icon } from '@material-ui/core';
 import { useEffect } from 'react';
+import { useCheckPasswordMutation } from '../../features/userAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -67,8 +68,7 @@ const useStyles = makeStyles((theme) => ({
 const EditPassword = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const userPasswordCheckData = useSelector(getPasswordCheckData);
-  const updatedUserData = useSelector(getUpdatedUserData);
+  const [checkOldPassword, checkedOldPasswordResult] = useCheckPasswordMutation();
 
   const userData = useSelector(getUserSigninData);
   const navigate = useNavigate();
@@ -82,10 +82,8 @@ const EditPassword = () => {
 
   useEffect(() => {
     // if user after password check if cleared send update password request to server
-    if (userPasswordCheckData.hasOwnProperty('token')) {
-      dispatch(updateUserPassword(user));
-    }
-  }, [dispatch, userPasswordCheckData.token]);
+    checkedOldPasswordResult.isSuccess
+  }, []);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
@@ -160,23 +158,23 @@ const EditPassword = () => {
 
           <br />
 
-          {values.error ? (
+          {values.error && (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
               {values.error}
-            </Typography>
-          ) : //checking if there is error reported when checking if user provided correct error
+            </Typography>)}
+          { 
+          //checking if there is error reported when checking if user provided correct error
           //and then checking if updated password match user schema requirement. Had to put it here as
-          // moongoose-beatiful-validator is returning very long and ugly message
-          userPasswordCheckData.hasOwnProperty('error') ||
-            updatedUserData.hasOwnProperty('error') ? (
-            <Typography component='p' color='error'>
+          // moongoose-beatiful-validator is returning very long and ugly message}
+          }
+          {checkedOldPasswordResult.isError &&
+            (<Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              {updatedUserData.hasOwnProperty('error')
-                ? updatedUserData.error
-                : 'Incorrect password'}
-            </Typography>
-          ) : null}
+              {checkedOldPasswordResult.error.message}
+              
+            </Typography>)
+          }
         </CardContent>
 
         <CardActions>

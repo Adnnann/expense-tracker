@@ -6,8 +6,7 @@ import { ThemeProvider, createTheme, StyledEngineProvider } from '@mui/material/
 import {ApiProvider} from '@reduxjs/toolkit/query/react';
 function App() {
 
-  const location = window.location.pathname
-
+ 
   return (
    
     <ThemeProvider theme={theme}>

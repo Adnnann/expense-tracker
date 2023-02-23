@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Dashboard from './components/dashboard/Dashboard';
 import Signup from './components/Signup';
 import Signin from './components/Signin';
@@ -7,6 +7,7 @@ import Footer from './components/core/Footer'
 import EditProfile from './components/user/EditProfile';
 import EditPassword from './components/user/NewPassword';
 import DeleteAccount from './components/user/DeleteAccount';
+import { useNavigate } from 'react-router-dom';
 
 
 // TRANSACTIONS
@@ -19,12 +20,16 @@ import EditTransaction from './components/transactions/EditTransaction';
 import Statistics from './components/statistics/Statistics';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import PageNotFound from './components/PageNotFound';
 
 function MainRouter() {
+
+ 
 
   return (
     <>
     <Router>
+    
       <Header /> 
         <Routes>
           <Route path="/" element={<Signin />}></Route>
@@ -38,6 +43,7 @@ function MainRouter() {
           <Route path="/transactions/addNewExpense" element={<AddNewExpense />}></Route>
           <Route path="/transaction/:transactionId" element={<EditTransaction />}></Route>
           <Route path="/statistics" element={<Statistics />}></Route> 
+          <Route path="*" element={<PageNotFound />}></Route>
         </Routes>
       <Footer />
     </Router>

@@ -14,6 +14,7 @@ const createTransaction = (req, res) => {
     })
 }
 const getTransactions = (req, res) => {
+
     // get id to enable filtering of data
     const userId = jwtDecode(req.cookies.userJwtToken)._id
     //filter data - get transactions for last three days
@@ -22,12 +23,14 @@ const getTransactions = (req, res) => {
     //sort data in descinding order
     .sort({"created":-1})
     .exec((err, transactions) => {
+       
         if(err){
             return res.status(400).json({error:dbErrorHandlers.getErrorMessage(err)})
         }
        return res.send({message:transactions})
     })
-}
+} 
+
 
 const getTransaction =  (req, res) => {
     res.status(200).json(req.profile)

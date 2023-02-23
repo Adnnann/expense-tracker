@@ -106,10 +106,21 @@ const Transactions = () => {
   const transactionId = useSelector(getDeleteId);
   const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
   const [deleteTransaction, result] = useDeleteTransactionMutation();
-  
-  useEffect(() => {
+  const [skip, setSkip] = useState(false);
 
-  }, [token.length]);
+  const {
+    data: userTransactions,
+    isSuccess,
+    isLoading,
+    isError,
+    error,
+  } = useFetchUserTransactionsQuery( undefined, {
+    skip: skip,
+  });
+
+  useEffect(() => {
+    error?.data && navigate('/');
+  }, [error]);
 
   const redirectTosignin = () => {
     navigate('/');
@@ -127,13 +138,6 @@ const Transactions = () => {
 
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
-  const {
-    data: userTransactions,
-    isSuccess,
-    isLoading,
-    isError,
-    error,
-  } = useFetchUserTransactionsQuery()
 
   const openDeleteModal = useSelector(getOpenDeleteModal);
   const handleClose = () => {

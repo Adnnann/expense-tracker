@@ -1,8 +1,8 @@
-import Typography from '@material-ui/core/Typography';
-import { Box } from '@mui/material';
 import { setChartType } from '../../features/statisticsSlice';
 import { useDispatch } from 'react-redux';
-import { ButtonGroup, IconButton, makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { Box } from '@mui/material';
 import PieChartIcon from '@mui/icons-material/PieChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';

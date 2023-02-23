@@ -72,9 +72,7 @@ const useStyles = makeStyles((theme) => ({
 const EditTransaction = () => {
   const classes = useStyles();
   const transactionToEdit = useSelector(getTransactionToEdit)
-
   const navigate = useNavigate();
-  const token = useSelector(getUserToken);
   const [values, setValues] = useState({
     title: transactionToEdit[0].title,
     amount: transactionToEdit[0].amountInBAM,
@@ -87,6 +85,7 @@ const EditTransaction = () => {
   
 
   useEffect(() => {
+    result.isError && console.log(result.error.data)
     result.isSuccess && navigate(`/transactions`)
   }, [result]);
 
@@ -134,10 +133,7 @@ const EditTransaction = () => {
         };
         break;
     }
-
-    console.log(transaction)
     updateUserTransaction(transaction)
-    //dispatch(updateUserTransaction(transaction));
   };
 
   const cancel = () => {
@@ -150,6 +146,7 @@ const EditTransaction = () => {
         <CardContent>
           <TextField
             id='title'
+            error={result?.error && result.error.data.includes('title')}
             className={classes.textField}
             value={values.title ? values.title : ''}
             onChange={handleChange('title')}
@@ -159,6 +156,7 @@ const EditTransaction = () => {
 
           <TextField
             id='lastName'
+            error={result?.error && result.error.data.includes('amount')}
             className={classes.textField}
             value={values.amount ? values.amount : ''}
             onChange={handleChange('amount')}
@@ -169,10 +167,10 @@ const EditTransaction = () => {
           <br />
           <br />
 
-          {result.isError && (
+          {result.status === 'rejected' && (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              {result.error.message}
+              {result.error.data}
             </Typography>
           )}
 

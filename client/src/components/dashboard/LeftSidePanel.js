@@ -164,8 +164,7 @@ const LeftSideDashboard = () => {
         },
       }}
     >
-  
-        <ButtonGroup style={{ marginTop: '10%', borderBottomStyle: 'solid' }}>
+     <ButtonGroup style={{ marginTop: '10%', borderBottomStyle: 'solid' }}>
           <Button variant='contained' className={classes.buttonGroup}>
             Dashboard
           </Button>
@@ -197,6 +196,7 @@ const LeftSideDashboard = () => {
             anchorEl={anchorElStatistics}
           />
         </ButtonGroup>
+
       
       {isSuccess && userTransactions.length > 0 && (
         <>
@@ -226,16 +226,16 @@ const LeftSideDashboard = () => {
           expense={calculateIncomesAndExpenses(userTransactions, 'expense', null, selectedExchangeRate)}
           /> 
     
-        {/*instruct user to go to tab transactions to start adding incomes and expenses in order to get the report*/}
-        <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
+        
+    </>
+        )}
+     {/*instruct user to go to tab transactions to start adding incomes and expenses in order to get the report*/}
+     {isSuccess && userTransactions.length === 0 && (<Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
           Click on the tab transactions and start adding incomes or expenses to generate dashboard
           data
-        </Typography>
+        </Typography>)}
 
-        </>
         
-        )}
-     
     </Box>
   );
 };

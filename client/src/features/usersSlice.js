@@ -153,7 +153,7 @@ const initialState = {
   savedExchangeRates: {},
   exchangeRatesFromDB: {},
   dashboardData: [],
-
+  userDataToDisplay: {},
   //TRANACTIONS
  
   //STATISTICS
@@ -179,9 +179,6 @@ export const usersSlice = createSlice({
     cleanPasswordCheckData: (state, action) => {
       state.passwordCheck = {};
     },
-    getUserDataToDisplay: (state, action) => {
-      state.userData = state.loggedUser.user;
-    },
     dashboardData: (state, action) => {
       state.dashboardData = [...state.dashboardData, action.payload];
     },
@@ -191,6 +188,9 @@ export const usersSlice = createSlice({
     },
     setCurrencyExchangeRate: (state, action) => {
       state.currencyExchangeRate = action.payload;
+    },
+    setUserDataToDisplay: (state, action) => {
+      state.userDataToDisplay = action.payload;
     },
    
    
@@ -257,10 +257,7 @@ export const getCurrency = (state) => state.users.currency;
 
 
 ///
-export const getFilterVarForCharts = (state) => state.users.filterVarForCharts;
-export const getGroupingVarForCharts = (state) => state.users.groupingVarForCharts;
-export const getChartType = (state) => state.users.chartType;
-export const getStatisticsOverviewLevel = (state) => state.users.statisticsOverviewLevel;
+
 export const getSavedExchangeRates = (state) => state.users.savedExchangeRates;
 export const getExchangeRatesFromDB = (state) => state.users.exchangeRatesFromDB;
 
@@ -287,6 +284,7 @@ export const {
   setDeleteAccountModal,
   cleanStore,
   cleanUserData,
+  setUserDataToDisplay,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

@@ -8,16 +8,18 @@ export default function DropdownMenuButtons({
   open,
   handleClose,
   anchorEl,
+  color,
 }) {
   return (
     <div>
       <Button
-        style={{ textTransform: 'none' }}
+        style={{ textTransform: 'none', color:color }}
         id='demo-customized-button'
         aria-controls={open ? 'demo-customized-menu' : undefined}
         aria-haspopup='true'
         aria-expanded={open ? 'true' : undefined}
         variant='primary'
+        color={color}
         onClick={handleOpenMenuButtons}
         endIcon={<KeyboardArrowDownIcon />}
       >
