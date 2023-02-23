@@ -11,18 +11,14 @@ import { useNavigate } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import {
-  userToken,
-  getUserToken,
-  cleanTransactionData,
-} from '../../features/usersSlice';
+import { userToken, getUserToken, cleanTransactionData } from '../../features/usersSlice';
 import jwtDecode from 'jwt-decode';
 import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
 import { fetchUserTransactions } from '../../features/transactionsSlice';
 import { createTransaction, getTransactionData } from '../../features/transactionsSlice';
-import {useCreateTransactionMutation} from '../../features/transactionsAPI';
+import { useCreateTransactionMutation } from '../../features/transactionsAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -99,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const AddNewIncome = () => {
-
   const [addTransaction, result] = useCreateTransactionMutation();
 
   const classes = useStyles();
@@ -109,7 +104,6 @@ const AddNewIncome = () => {
   const token = useSelector(getUserToken);
 
   console.log('token', token);
-
 
   const [currency, setCurrency] = useState('BAM');
   const [values, setValues] = useState({

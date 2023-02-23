@@ -155,7 +155,7 @@ const initialState = {
   dashboardData: [],
   userDataToDisplay: {},
   //TRANACTIONS
- 
+
   //STATISTICS
   filterVarForCharts: '',
   groupingVarForCharts: 'day',
@@ -182,7 +182,7 @@ export const usersSlice = createSlice({
     dashboardData: (state, action) => {
       state.dashboardData = [...state.dashboardData, action.payload];
     },
-   
+
     setCurrency: (state, action) => {
       state.currency = action.payload;
     },
@@ -192,9 +192,7 @@ export const usersSlice = createSlice({
     setUserDataToDisplay: (state, action) => {
       state.userDataToDisplay = action.payload;
     },
-   
-   
-  
+
     setDeleteAccountModal: (state, action) => {
       state.deleteAccountModal = action.payload;
     },
@@ -232,8 +230,6 @@ export const usersSlice = createSlice({
     [reloginUser.fulfilled]: (state, { payload }) => {
       return { ...state, loggedUser: payload, userDataToDisplay: payload.message };
     },
-
-    
   },
 });
 
@@ -250,11 +246,7 @@ export const getDeleteAccountModal = (state) => state.users.deleteAccountModal;
 export const getCurrencyExchangeRates = (state) => state.users.currencyExchangeRates;
 ///
 
-
-
 export const getCurrency = (state) => state.users.currency;
-
-
 
 ///
 

@@ -13,7 +13,7 @@ export default function DropdownMenuButtons({
   return (
     <div>
       <Button
-        style={{ textTransform: 'none', color:color }}
+        style={{ textTransform: 'none', color: color }}
         id='demo-customized-button'
         aria-controls={open ? 'demo-customized-menu' : undefined}
         aria-haspopup='true'

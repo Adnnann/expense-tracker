@@ -1,6 +1,6 @@
 import Typography from '@material-ui/core/Typography';
 
-export default function LeftSidePanelData({totalBalance}) {
+export default function LeftSidePanelData({ totalBalance }) {
   return (
     <div style={{ display: 'inline-flex' }}>
       <Typography
@@ -9,9 +9,10 @@ export default function LeftSidePanelData({totalBalance}) {
           display: 'inline-flex',
           marginTop: '10px',
           marginLeft: '5px',
-          color: "black"}}
+          color: 'black',
+        }}
       >
-          {totalBalance}
+        {totalBalance}
       </Typography>
     </div>
   );

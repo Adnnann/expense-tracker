@@ -14,7 +14,6 @@ import {
   getUserToken,
   cleanRegisteredUserData,
   setUserDataToDisplay,
-  
 } from '../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -71,12 +70,11 @@ const Signin = () => {
 
   //if user has token (is logged) redirected to protected page
   useEffect(() => {
-    if(result.isSuccess){
+    if (result.isSuccess) {
       dispatch(setUserDataToDisplay(result.data.user));
-      dispatch(userToken())
-      navigate('/dashboard')
+      dispatch(userToken());
+      navigate('/dashboard');
     }
-    
   }, [result]);
 
   // send request to server to login user and in case there are errors collect error

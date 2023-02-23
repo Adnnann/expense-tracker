@@ -15,13 +15,13 @@ import {
 } from '../../features/exchangeRatesSlice';
 import { getUserTransactions } from '../../features/transactionsSlice';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-import { 
-  getStatisticsOverviewLevel, 
-  getFilterVarForCharts, 
-  getGroupingVarForCharts
- } from '../../features/statisticsSlice';
+import {
+  getStatisticsOverviewLevel,
+  getFilterVarForCharts,
+  getGroupingVarForCharts,
+} from '../../features/statisticsSlice';
 const RightPanelSatistics = () => {
-  const {data:userTransactions, isSuccess} = useFetchUserTransactionsQuery()
+  const { data: userTransactions, isSuccess } = useFetchUserTransactionsQuery();
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const filterVarForCharts = useSelector(getFilterVarForCharts);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
@@ -75,13 +75,13 @@ const RightPanelSatistics = () => {
       )
       .orderBy(['created'], ['desc'])
       .groupBy((item) =>
-        groupingVarForCharts === 'week' 
+        groupingVarForCharts === 'week'
           ? `${item.day}`
           : groupingVarForCharts === 'month'
           ? `${item.week}`
           : groupingVarForCharts === 'year'
           ? `${item.month}`
-          : ''
+          : '',
       )
       //below part is added to enable me to get income and expense sum for each level of disaggregation of
       //data: day, week, month or year and to be able to loop through it

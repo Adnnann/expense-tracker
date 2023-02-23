@@ -27,29 +27,23 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [inactiveUser, setInactiveUser] = useState(false);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
- 
 
   const {
-    data: userTransactionsData, 
+    data: userTransactionsData,
     isSuccess,
     isFetching,
     isError,
     error,
     isLoading,
-  }  = useFetchUserTransactionsQuery();
-console.log(error?.status)
+  } = useFetchUserTransactionsQuery();
+  console.log(error?.status);
   useEffect(() => {
-   
     if (error?.status) {
-      console.log(error)
+      console.log(error);
       navigate('/');
-      return
+      return;
     }
   }, [error]);
-
- 
-
-
 
   //set timeout for user inactivity
   const timeout = 1200000;
@@ -88,7 +82,9 @@ console.log(error?.status)
       <Grid item xs={12} md={8} lg={6} xl={6}>
         {isLoading && !error?.data && <Loader />}
         {isError && !error?.data && <h1>{error}</h1>}
-        {isSuccess && <RightSidePanel data={userTransactionsData} selectedExchangeRate={selectedExchangeRate} />} 
+        {isSuccess && (
+          <RightSidePanel data={userTransactionsData} selectedExchangeRate={selectedExchangeRate} />
+        )}
       </Grid>
       <Dialog open={inactiveUser}>
         <DialogTitle>Session expired</DialogTitle>

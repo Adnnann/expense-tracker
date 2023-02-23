@@ -11,18 +11,18 @@ import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 import { calculateTotalIncomesAndExpenses } from '../utils/functions/helper-functions';
 
 const Plots = () => {
-  const {data:userTransactions, isSuccess} = useFetchUserTransactionsQuery()
+  const { data: userTransactions, isSuccess } = useFetchUserTransactionsQuery();
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const chartType = useSelector(getChartType);
 
-  
   const Plot = createPlotlyComponent(Plotly);
 
-   
-  return isSuccess && userTransactions.length > 0 && (
+  return (
+    isSuccess &&
+    userTransactions.length > 0 &&
     // display chart based on user selection.
     // chart type is stored in Redux store
-    chartType !== 'pie' ? (
+    (chartType !== 'pie' ? (
       <Plot
         data={[
           {
@@ -30,8 +30,8 @@ const Plots = () => {
             label: ['Incomes'],
             textinfo: 'label',
             hoverinfo: 'label',
-            x: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income')],
-            y: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income')],
+            x: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'income')],
+            y: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'income')],
             showlegend: false,
             marker: { color: 'green' },
             name: 'Income',
@@ -40,8 +40,12 @@ const Plots = () => {
             showlegend: false,
             type: chartType,
             textinfo: 'percent+label',
-            x: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense')],
-            y: [calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense')],
+            x: [
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'expense'),
+            ],
+            y: [
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'expense'),
+            ],
             marker: { color: 'red' },
             name: 'Expense',
           },
@@ -55,8 +59,8 @@ const Plots = () => {
         data={[
           {
             values: [
-              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'income'),
-              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts,'expense'),
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'income'),
+              calculateTotalIncomesAndExpenses(userTransactions, groupingVarForCharts, 'expense'),
             ],
             type: 'pie',
             labels: ['Incomes', 'Expenses'],
@@ -86,8 +90,8 @@ const Plots = () => {
           margin: { t: 10, b: 10, l: 10, r: 0, pad: '0' },
         }}
       />
-    )
-  ) 
+    ))
+  );
 };
 
 export default Plots;

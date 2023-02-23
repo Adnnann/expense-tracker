@@ -10,7 +10,6 @@ import {
   setFilterVarForCharts,
   setGroupingVarForCharts,
   setStatisticsOverviewLevel,
-  
 } from '../../features/statisticsSlice';
 import _ from 'lodash';
 import { useNavigate } from 'react-router';
@@ -18,22 +17,17 @@ import DropdownMenuButtons from '../utils/DropdownMenuButtons';
 import {
   getCurrencyExchangeRates,
   getSelectedExchangeRate,
-  setSelectedExchangeRate,  
+  setSelectedExchangeRate,
 } from '../../features/exchangeRatesSlice';
-import { 
-  getFilter, 
+import {
+  getFilter,
   setTransactionsOverviewLevel,
-  
   setGroupingVar,
 } from '../../features/transactionsSlice';
 import LeftSidePanelData from './LeftSidePanelData';
 import SelectCurrency from './SelectCurrency';
-import { 
-  calculateIncomesAndExpenses, calculateTotal 
-} from '../utils/functions/helper-functions';
+import { calculateIncomesAndExpenses, calculateTotal } from '../utils/functions/helper-functions';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-
-
 
 const useStyles = makeStyles((theme) => ({
   buttonGroup: {
@@ -58,11 +52,12 @@ const LeftSideDashboard = () => {
 
   //DODATI LOADER I ERROR HANDLING
   const {
-    data:userTransactions,
-    isSuccess, 
-    isError, 
-   isFetching,
-  error} = useFetchUserTransactionsQuery()
+    data: userTransactions,
+    isSuccess,
+    isError,
+    isFetching,
+    error,
+  } = useFetchUserTransactionsQuery();
 
   //manage dropdown menus in selection panel for statistical overview
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
@@ -164,40 +159,39 @@ const LeftSideDashboard = () => {
         },
       }}
     >
-     <ButtonGroup style={{ marginTop: '10%', borderBottomStyle: 'solid' }}>
-          <Button variant='contained' className={classes.buttonGroup}>
-            Dashboard
-          </Button>
+      <ButtonGroup style={{ marginTop: '10%', borderBottomStyle: 'solid' }}>
+        <Button variant='contained' className={classes.buttonGroup}>
+          Dashboard
+        </Button>
 
-          {
-            //menu for transactions
-          }
+        {
+          //menu for transactions
+        }
 
-          <DropdownMenuButtons
-            buttonLabel={'Transactions'}
-            handleOpenMenuButtons={handleClick}
-            handleCloseMenuButtons={handleClose}
-            openMenuButtons={open}
-            handleClose={handleClose}
-            anchorEl={anchorEl}
-            menuButtons={menuButtons}
-            menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
-          />
-          {
-            //menu for statistics
-          }
-          <DropdownMenuButtons
-            buttonLabel={'Statistics'}
-            handleOpenMenuButtons={handleClickStatistics}
-            menuButtons={['Week', 'Month', 'Year']}
-            menuFunctions={[week, month, year]}
-            open={openStatistics}
-            handleClose={handleCloseStatistics}
-            anchorEl={anchorElStatistics}
-          />
-        </ButtonGroup>
+        <DropdownMenuButtons
+          buttonLabel={'Transactions'}
+          handleOpenMenuButtons={handleClick}
+          handleCloseMenuButtons={handleClose}
+          openMenuButtons={open}
+          handleClose={handleClose}
+          anchorEl={anchorEl}
+          menuButtons={menuButtons}
+          menuFunctions={[dailyData, weeklyData, monthlyData, annualData]}
+        />
+        {
+          //menu for statistics
+        }
+        <DropdownMenuButtons
+          buttonLabel={'Statistics'}
+          handleOpenMenuButtons={handleClickStatistics}
+          menuButtons={['Week', 'Month', 'Year']}
+          menuFunctions={[week, month, year]}
+          open={openStatistics}
+          handleClose={handleCloseStatistics}
+          anchorEl={anchorElStatistics}
+        />
+      </ButtonGroup>
 
-      
       {isSuccess && userTransactions.length > 0 && (
         <>
           <Typography variant='h6' style={{ marginBottom: '0' }}>
@@ -205,37 +199,41 @@ const LeftSideDashboard = () => {
           </Typography>
 
           <span>
-           
-              <SelectCurrency
-                options={options}
-                currency={selectedValue}
-                handleChange={handleChange}
-              />
-         
-            
+            <SelectCurrency
+              options={options}
+              currency={selectedValue}
+              handleChange={handleChange}
+            />
           </span>
-          
-         
-        <LeftSidePanelData
+
+          <LeftSidePanelData
             totalBalance={calculateTotal(userTransactions, null, selectedExchangeRate)}
           />
-    
-        <PieChart
+
+          <PieChart
             //group and summarize data to get expenses and incomes
-          income={calculateIncomesAndExpenses(userTransactions, 'income', null, selectedExchangeRate)}
-          expense={calculateIncomesAndExpenses(userTransactions, 'expense', null, selectedExchangeRate)}
-          /> 
-    
-        
-    </>
-        )}
-     {/*instruct user to go to tab transactions to start adding incomes and expenses in order to get the report*/}
-     {isSuccess && userTransactions.length === 0 && (<Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
+            income={calculateIncomesAndExpenses(
+              userTransactions,
+              'income',
+              null,
+              selectedExchangeRate,
+            )}
+            expense={calculateIncomesAndExpenses(
+              userTransactions,
+              'expense',
+              null,
+              selectedExchangeRate,
+            )}
+          />
+        </>
+      )}
+      {/*instruct user to go to tab transactions to start adding incomes and expenses in order to get the report*/}
+      {isSuccess && userTransactions.length === 0 && (
+        <Typography component='p' style={{ textAlign: 'center', fontStyle: 'italic' }}>
           Click on the tab transactions and start adding incomes or expenses to generate dashboard
           data
-        </Typography>)}
-
-        
+        </Typography>
+      )}
     </Box>
   );
 };

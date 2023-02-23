@@ -20,8 +20,6 @@ export const fetchCurrencyExchangeRates = createAsyncThunk(
   },
 );
 
-
-
 const initialState = {
   currencyExchangeRates: {},
   savedExchangeRates: {},
@@ -72,89 +70,105 @@ const exchangeRatesSlice = createSlice({
     },
   },
   [saveExchangeRatesInDB.pending]: (state, { payload }) => {
-    return { ...state, savedExchangeRates: { 
-      loading: false,
-      success: false,
-      error: true,
-      data: payload, 
-    } 
-  }; 
-},
-[saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: true,
-    error: false,
-    data: payload,
-  }
-};
-},
-[saveExchangeRatesInDB.rejected]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: false,
-    error: true,
-    data: payload,
-  }
-};
-},
-[fetchSavedExchangeRatesFromDB.pending]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: false,
-    error: true,
-    data: payload,
-  }
-};
-},
-[fetchSavedExchangeRatesFromDB.fulfilled]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: true,
-    error: false,
-    data: payload,
-  }
-};
-},
-[fetchSavedExchangeRatesFromDB.rejected]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: false,
-    error: true,
-    data: payload,
-  }
-};
-},
-[saveExchangeRatesInDB.pending]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: true,
-    error: false,
-    data: payload,
-  }
-}
-},
-[saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: true,
-    error: false,
-    data: payload,
-  }
-}
-},
-[saveExchangeRatesInDB.rejected]: (state, { payload }) => {
-  return { ...state, savedExchangeRates: {
-    loading: false,
-    success: false,
-    error: true,
-    data: payload,
-  }
-}
-},
-
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: false,
+        error: true,
+        data: payload,
+      },
+    };
+  },
+  [saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: true,
+        error: false,
+        data: payload,
+      },
+    };
+  },
+  [saveExchangeRatesInDB.rejected]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: false,
+        error: true,
+        data: payload,
+      },
+    };
+  },
+  [fetchSavedExchangeRatesFromDB.pending]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: false,
+        error: true,
+        data: payload,
+      },
+    };
+  },
+  [fetchSavedExchangeRatesFromDB.fulfilled]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: true,
+        error: false,
+        data: payload,
+      },
+    };
+  },
+  [fetchSavedExchangeRatesFromDB.rejected]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: false,
+        error: true,
+        data: payload,
+      },
+    };
+  },
+  [saveExchangeRatesInDB.pending]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: true,
+        error: false,
+        data: payload,
+      },
+    };
+  },
+  [saveExchangeRatesInDB.fulfilled]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: true,
+        error: false,
+        data: payload,
+      },
+    };
+  },
+  [saveExchangeRatesInDB.rejected]: (state, { payload }) => {
+    return {
+      ...state,
+      savedExchangeRates: {
+        loading: false,
+        success: false,
+        error: true,
+        data: payload,
+      },
+    };
+  },
 });
-
 
 export const getCurrencyExchangeRates = (state) => state.exchangeRates.currencyExchangeRates;
 export const getSavedExchangeRates = (state) => state.exchangeRates.savedExchangeRates;

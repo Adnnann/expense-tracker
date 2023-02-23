@@ -30,7 +30,11 @@ import {
   fetchCurrencyExchangeRates,
   getCurrencyExchangeRates,
 } from '../../features/exchangeRatesSlice';
-import { useFetchUserQuery, useIsSignedUserQuery, useSignoutUserMutation } from '../../features/userAPI';
+import {
+  useFetchUserQuery,
+  useIsSignedUserQuery,
+  useSignoutUserMutation,
+} from '../../features/userAPI';
 import { setUserDataToDisplay } from '../../features/usersSlice';
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -84,11 +88,9 @@ const Header = () => {
   const [signOut, result] = useSignoutUserMutation();
   const [anchorEl, setAnchorEl] = useState(null);
 
-
   const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
   const savedExchangeRates = useSelector(getSavedExchangeRates);
-  const userDataForDisplaying = useSelector(getUserDataToDisplay)
- 
+  const userDataForDisplaying = useSelector(getUserDataToDisplay);
 
   const pages = [
     '/',
@@ -101,15 +103,11 @@ const Header = () => {
     '/addNewIncome',
     '/addNewExpense',
     '/editTransaction',
-  ]
+  ];
 
   const requestedPage = window.location.pathname;
 
-
-
-
   useEffect(() => {
-
     // if (!pages.includes(requestedPage)) {
     //   navigate('/')
     // }
@@ -123,12 +121,10 @@ const Header = () => {
           },
         }),
       );
-    
-    navigate('/dashboard');
-  }
-  }, [
-  
-  ]);
+
+      navigate('/dashboard');
+    }
+  }, []);
 
   const open = Boolean(anchorEl);
 
@@ -151,7 +147,7 @@ const Header = () => {
   const date = new Date();
 
   const signout = () => {
-    signOut()
+    signOut();
     dispatch(cleanStore());
     navigate('/');
   };
@@ -168,102 +164,103 @@ const Header = () => {
   const menuFunctions = [editProfile, editPassword, deleteAccount];
   return (
     pages.includes(requestedPage) && (
-    <AppBar position='static'>
-      {userDataForDisplaying?.firstName  && (
-        <span
-          style={{ display: 'block', marginLeft: '10px' }}
-          sx={{ display: { xs: 'block', md: 'none' } }}
-        >
-          <Typography component='p' sx={{ display: { xs: 'block', md: 'none' } }}>
-            Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
-          </Typography>
-          <Typography
-            component='p'
-            style={{ fontSize: '9px' }}
+      <AppBar position='static'>
+        {userDataForDisplaying?.firstName && (
+          <span
+            style={{ display: 'block', marginLeft: '10px' }}
             sx={{ display: { xs: 'block', md: 'none' } }}
           >
-            {dateFormat(date, 'dddd, dd mmmm')} 
-          </Typography>
-        </span>)}
+            <Typography component='p' sx={{ display: { xs: 'block', md: 'none' } }}>
+              Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
+            </Typography>
+            <Typography
+              component='p'
+              style={{ fontSize: '9px' }}
+              sx={{ display: { xs: 'block', md: 'none' } }}
+            >
+              {dateFormat(date, 'dddd, dd mmmm')}
+            </Typography>
+          </span>
+        )}
 
+        <Toolbar disableGutters>
+          <Box
+            component='img'
+            sx={{
+              height:
+                window.location.pathname === '/' ||
+                window.location.pathname === '/signin' ||
+                window.location.pathname === '/signup'
+                  ? 64
+                  : 38,
+              display: { xs: 'none', md: 'block' },
+              marginTop: { xs: '4px' },
+              marginBottom: { xs: '4px' },
+            }}
+            alt='Expense tracker'
+            src='https://joyofandroid.com/wp-content/uploads/2019/06/monefy-money-manager-best-android-business-expense-tracker-finance-financial-income-list-add-deduct-minus-computer-smartphone.png'
+          />
 
-      <Toolbar disableGutters>
-        <Box
-          component='img'
-          sx={{
-            height:
+          <Typography
+            variant={
               window.location.pathname === '/' ||
               window.location.pathname === '/signin' ||
               window.location.pathname === '/signup'
-                ? 64
-                : 38,
-            display: { xs: 'none', md: 'block' },
-            marginTop: { xs: '4px' },
-            marginBottom: { xs: '4px' },
-          }}
-          alt='Expense tracker'
-          src='https://joyofandroid.com/wp-content/uploads/2019/06/monefy-money-manager-best-android-business-expense-tracker-finance-financial-income-list-add-deduct-minus-computer-smartphone.png'
-        />
-
-        <Typography
-          variant={
-            window.location.pathname === '/' ||
-            window.location.pathname === '/signin' ||
-            window.location.pathname === '/signup'
-              ? 'h4'
-              : 'h6'
-          }
-          className={
-            window.location.pathname === '/' ||
-            window.location.pathname === '/signin' ||
-            window.location.pathname === '/signup'
-              ? classes.title
-              : classes.dashboardTitle
-          }
-          sx={{ display: { xs: 'none', md: 'block' } }}
-        >
-          Personal Expense Tracker and Analyst
-        </Typography>
-        <br />
-
-        {window.location.pathname === '/signup' || window.location.pathname === '/' ? null : (
-          <ButtonGroup style={{ marginLeft: 'auto' }}>
-            <DropdownMenuButtons
-              buttonLabel='Profile'
-              handleOpenMenuButtons={handleOpen}
-              menuButtons={menuButtons}
-              menuFunctions={menuFunctions}
-              open={open}
-              handleClose={handleClose}
-              anchorEl={anchorEl}
-              color='white'
-            />
-            <Button
-              variant='primary'
-              onClick={signout}
-              style={{ textTransform: 'none', color: 'white' }}
-            >
-              Signout
-            </Button>
-          </ButtonGroup>
-        )}
-      </Toolbar>
-
-      {userDataForDisplaying?.firstName && (
-        <span style={{ marginLeft: '10px' }} sx={{ display: { xs: 'none', md: 'block' } }}>
-          <Typography variant='h6' sx={{ display: { xs: 'none', md: 'block' } }}>
-            Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
-          </Typography>
-          <Typography
-            component='p'
-            style={{ fontSize: '10px' }}
+                ? 'h4'
+                : 'h6'
+            }
+            className={
+              window.location.pathname === '/' ||
+              window.location.pathname === '/signin' ||
+              window.location.pathname === '/signup'
+                ? classes.title
+                : classes.dashboardTitle
+            }
             sx={{ display: { xs: 'none', md: 'block' } }}
           >
-            {dateFormat(date, 'dddd, dd mmmm')}
+            Personal Expense Tracker and Analyst
           </Typography>
-        </span>
-      )}
-    </AppBar>)
+          <br />
+
+          {window.location.pathname === '/signup' || window.location.pathname === '/' ? null : (
+            <ButtonGroup style={{ marginLeft: 'auto' }}>
+              <DropdownMenuButtons
+                buttonLabel='Profile'
+                handleOpenMenuButtons={handleOpen}
+                menuButtons={menuButtons}
+                menuFunctions={menuFunctions}
+                open={open}
+                handleClose={handleClose}
+                anchorEl={anchorEl}
+                color='white'
+              />
+              <Button
+                variant='primary'
+                onClick={signout}
+                style={{ textTransform: 'none', color: 'white' }}
+              >
+                Signout
+              </Button>
+            </ButtonGroup>
+          )}
+        </Toolbar>
+
+        {userDataForDisplaying?.firstName && (
+          <span style={{ marginLeft: '10px' }} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Typography variant='h6' sx={{ display: { xs: 'none', md: 'block' } }}>
+              Hello, {`${userDataForDisplaying.firstName} ${userDataForDisplaying.lastName}`}
+            </Typography>
+            <Typography
+              component='p'
+              style={{ fontSize: '10px' }}
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              {dateFormat(date, 'dddd, dd mmmm')}
+            </Typography>
+          </span>
+        )}
+      </AppBar>
+    )
   );
 };
 

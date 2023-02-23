@@ -46,21 +46,21 @@ const LeftPanelStatistics = (props) => {
       </Typography>
 
       {/* clicable images for user to select type of chart for statistical overview of data */}
-       <div style={{display:'flex'}}> 
-
-   
+      <div style={{ display: 'flex' }}>
         <IconButton onClick={pieChart}>
-          <PieChartIcon sx={{ 
-          
-            fontSize: '48px', color: 'green' }} />
+          <PieChartIcon
+            sx={{
+              fontSize: '48px',
+              color: 'green',
+            }}
+          />
         </IconButton>
-        <IconButton onClick={barChart} >
-          <BarChartIcon  sx={{fontSize: '48px', color: 'purple' }} />
+        <IconButton onClick={barChart}>
+          <BarChartIcon sx={{ fontSize: '48px', color: 'purple' }} />
         </IconButton>
         <IconButton onClick={lineChart}>
-          <TimelineIcon  sx={{ fontSize: '48px', color: 'aquamarine' }} />
+          <TimelineIcon sx={{ fontSize: '48px', color: 'aquamarine' }} />
         </IconButton>
-       
       </div>
     </Box>
   );

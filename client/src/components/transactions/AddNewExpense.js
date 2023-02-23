@@ -11,18 +11,17 @@ import { useNavigate } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import {
-  userToken,
-  getUserToken,
-  cleanTransactionData,
-} from '../../features/usersSlice';
+import { userToken, getUserToken, cleanTransactionData } from '../../features/usersSlice';
 import jwtDecode from 'jwt-decode';
 import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-import { fetchUserTransactions, createTransaction, getTransactionData } from '../../features/transactionsSlice';
+import {
+  fetchUserTransactions,
+  createTransaction,
+  getTransactionData,
+} from '../../features/transactionsSlice';
 import { useCreateTransactionMutation } from '../../features/transactionsAPI';
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -103,7 +102,7 @@ const AddNewExpense = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = useSelector(getUserToken);
-  const [addExpense, result] = useCreateTransactionMutation()
+  const [addExpense, result] = useCreateTransactionMutation();
 
   const [currency, setCurrency] = useState('BAM');
   const [values, setValues] = useState({
@@ -193,7 +192,7 @@ const AddNewExpense = () => {
         };
         break;
     }
-    addExpense(expense)
+    addExpense(expense);
   };
 
   return (

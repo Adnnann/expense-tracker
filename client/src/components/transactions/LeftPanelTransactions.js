@@ -19,21 +19,19 @@ const LeftPanelTransactions = () => {
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState('BAM');
   const EURandUSDExchangeRates = useSelector(getCurrencyExchangeRates);
-  const selectedCurrencyRate = useSelector(getSelectedExchangeRate)
+  const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
   const groupingVar = useSelector(getGroupingVar);
-const [skip, setSkip] = useState(true)
+  const [skip, setSkip] = useState(true);
 
   const {
-    data: userTransactions, 
-    isSuccess, 
-    isError, 
-    isLoading
+    data: userTransactions,
+    isSuccess,
+    isError,
+    isLoading,
   } = useFetchUserTransactionsQuery({
-    skip: skip
-  })
+    skip: skip,
+  });
 
-
-  
   //based on user selection of currency use appropriate coeficients to show all data in differenct currencies. Default values is BAM, hence multiple by one.
   const handleChange = (event) => {
     switch (event.target.value) {
@@ -49,7 +47,7 @@ const [skip, setSkip] = useState(true)
     }
   };
 
-  console.log('test', isSuccess, userTransactions)
+  console.log('test', isSuccess, userTransactions);
 
   return (
     <Box
@@ -59,8 +57,6 @@ const [skip, setSkip] = useState(true)
         alignItems: 'center',
       }}
     >
-
-
       <Typography
         component='p'
         style={{
@@ -68,12 +64,11 @@ const [skip, setSkip] = useState(true)
           color: 'black',
         }}
       >
-      
         <span style={{ color: 'black', fontWeight: 'bold' }}>Total Balance </span>
         <br />
-        {isSuccess && userTransactions.length > 0 &&
-        calculateTotal(userTransactions, groupingVar, selectedCurrencyRate)
-        }
+        {isSuccess &&
+          userTransactions.length > 0 &&
+          calculateTotal(userTransactions, groupingVar, selectedCurrencyRate)}
       </Typography>
 
       <span>

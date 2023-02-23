@@ -82,7 +82,7 @@ const EditPassword = () => {
 
   useEffect(() => {
     // if user after password check if cleared send update password request to server
-    checkedOldPasswordResult.isSuccess
+    checkedOldPasswordResult.isSuccess;
   }, []);
 
   const handleChange = (name) => (event) => {
@@ -162,19 +162,19 @@ const EditPassword = () => {
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
               {values.error}
-            </Typography>)}
-          { 
-          //checking if there is error reported when checking if user provided correct error
-          //and then checking if updated password match user schema requirement. Had to put it here as
-          // moongoose-beatiful-validator is returning very long and ugly message}
+            </Typography>
+          )}
+          {
+            //checking if there is error reported when checking if user provided correct error
+            //and then checking if updated password match user schema requirement. Had to put it here as
+            // moongoose-beatiful-validator is returning very long and ugly message}
           }
-          {checkedOldPasswordResult.isError &&
-            (<Typography component='p' color='error'>
+          {checkedOldPasswordResult.isError && (
+            <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
               {checkedOldPasswordResult.error.message}
-              
-            </Typography>)
-          }
+            </Typography>
+          )}
         </CardContent>
 
         <CardActions>

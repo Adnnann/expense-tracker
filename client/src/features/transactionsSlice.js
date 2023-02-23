@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-
 const initialState = {
   filter: { income: 'income', expense: 'expense' },
   currencyExchangeRate: 1,
@@ -10,7 +9,7 @@ const initialState = {
   openDeleteModal: false,
   transactionsOverviewLevel: 'Daily',
   transactionToEdit: {},
-}
+};
 
 export const transactionsSlice = createSlice({
   name: 'transactions',
@@ -39,8 +38,8 @@ export const transactionsSlice = createSlice({
     },
     setGroupingVar: (state, action) => {
       state.groupingVar = action.payload;
-    }
-  }, 
+    },
+  },
 });
 
 export const getGroupingVar = (state) => state.transactions.groupingVar;
@@ -54,15 +53,15 @@ export const getDeleteId = (state) => state.transactions.deleteId;
 export const getOpenDeleteModal = (state) => state.transactions.openDeleteModal;
 export const getDeleteAPIMessage = (state) => state.transactions.deleteTransaction;
 export const getTransactionsOverviewLevel = (state) => state.transactions.transactionsOverviewLevel;
-export const getTransactionToEdit = (state) => state.transactions.transactionToEdit; 
+export const getTransactionToEdit = (state) => state.transactions.transactionToEdit;
 
 export const {
-  cleanTransactionData, 
-  cleanTransactionUpdatedData, 
+  cleanTransactionData,
+  cleanTransactionUpdatedData,
   setFilter,
   setGroupingVar,
   setDeleteId,
-  setOpenDeleteModal, 
+  setOpenDeleteModal,
   setTransactionsOverviewLevel,
   cleanDeleteAPIMessage,
   setTransactionToEdit,

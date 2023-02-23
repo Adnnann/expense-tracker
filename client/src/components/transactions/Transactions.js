@@ -1,9 +1,4 @@
-import {
-  getUserToken,
-  userToken,
-  signoutUser,
- 
-} from '../../features/usersSlice';
+import { getUserToken, userToken, signoutUser } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Grid } from '@material-ui/core';
@@ -21,24 +16,31 @@ import { useEffect, useState } from 'react';
 import RightPanelTransactions from './RightPanelTransactions';
 import Menu from '@mui/material/Menu';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
-import { getDeleteId, 
-  getTransactionsOverviewLevel, 
-  getOpenDeleteModal, 
+import {
+  getDeleteId,
+  getTransactionsOverviewLevel,
+  getOpenDeleteModal,
   getFilter,
   setGroupingVar,
   getGroupingVar,
   setFilter,
-setTransactionsOverviewLevel,
-setOpenDeleteModal } from '../../features/transactionsSlice';
-import { useDeleteTransactionMutation, useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-import { getSelectedExchangeRate, setSelectedExchangeRate } from '../../features/exchangeRatesSlice';
+  setTransactionsOverviewLevel,
+  setOpenDeleteModal,
+} from '../../features/transactionsSlice';
+import {
+  useDeleteTransactionMutation,
+  useFetchUserTransactionsQuery,
+} from '../../features/transactionsAPI';
+import {
+  getSelectedExchangeRate,
+  setSelectedExchangeRate,
+} from '../../features/exchangeRatesSlice';
 import { intToString } from '../utils/functions/helper-functions';
-import { 
-  setStatisticsOverviewLevel,  
-  setGroupingVarForCharts, 
+import {
+  setStatisticsOverviewLevel,
+  setGroupingVarForCharts,
   setFilterVarForCharts,
 } from '../../features/statisticsSlice';
-
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -114,7 +116,7 @@ const Transactions = () => {
     isLoading,
     isError,
     error,
-  } = useFetchUserTransactionsQuery( undefined, {
+  } = useFetchUserTransactionsQuery(undefined, {
     skip: skip,
   });
 
@@ -131,7 +133,6 @@ const Transactions = () => {
   const groupingVar = useSelector(getGroupingVar);
   const transactionsOverviewLevel = useSelector(getTransactionsOverviewLevel);
   const IDOfTransactionToDelete = useSelector(getDeleteId);
-
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -326,14 +327,16 @@ const Transactions = () => {
         </Grid>
 
         <Grid item xs={12} md={8} lg={7} xl={7}>
-        {isLoading && <p>Loading...</p>}
-        {isSuccess && userTransactions.length > 0 && (
-          <RightPanelTransactions
-          data={userTransactions}
-          intToString={intToString}
-          currencyRate={selectedCurrencyRate}
-          filter={filter}
-          groupingVar={groupingVar} />)}
+          {isLoading && <p>Loading...</p>}
+          {isSuccess && userTransactions.length > 0 && (
+            <RightPanelTransactions
+              data={userTransactions}
+              intToString={intToString}
+              currencyRate={selectedCurrencyRate}
+              filter={filter}
+              groupingVar={groupingVar}
+            />
+          )}
         </Grid>
       </Grid>
 

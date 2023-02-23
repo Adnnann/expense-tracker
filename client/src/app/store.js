@@ -13,8 +13,7 @@ export const store = configureStore({
     transactions: transactionsReducer,
     exchangeRates: exchangeRatesReducer,
     statistics: statisticsReducer,
-    
   },
- middleware: (getDefaultMiddleware) =>
-   getDefaultMiddleware().concat(transactionsAPI.middleware, userAPI.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(transactionsAPI.middleware, userAPI.middleware),
 });

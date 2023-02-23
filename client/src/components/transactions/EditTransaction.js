@@ -8,25 +8,24 @@ import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import { makeStyles } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  
-  userToken,
-  getUserToken,
-
-} from '../../features/usersSlice';
+import { userToken, getUserToken } from '../../features/usersSlice';
 import { useNavigate, useParams } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import { 
-  fetchUserTransactionData, 
+import {
+  fetchUserTransactionData,
   fetchUserTransactions,
   getUserTransactionData,
   cleanTransactionUpdatedData,
   updateUserTransaction,
   getUpdatedUserTransaction,
-  getTransactionToEdit, } from '../../features/transactionsSlice';
-import { useFetchUserTransactionsQuery, useUpdateUserTransactionMutation } from '../../features/transactionsAPI';
+  getTransactionToEdit,
+} from '../../features/transactionsSlice';
+import {
+  useFetchUserTransactionsQuery,
+  useUpdateUserTransactionMutation,
+} from '../../features/transactionsAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -71,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
 
 const EditTransaction = () => {
   const classes = useStyles();
-  const transactionToEdit = useSelector(getTransactionToEdit)
+  const transactionToEdit = useSelector(getTransactionToEdit);
   const navigate = useNavigate();
   const [values, setValues] = useState({
     title: transactionToEdit[0].title,
@@ -81,12 +80,11 @@ const EditTransaction = () => {
 
   const params = useParams();
 
-  const [updateUserTransaction, result] = useUpdateUserTransactionMutation()
-  
+  const [updateUserTransaction, result] = useUpdateUserTransactionMutation();
 
   useEffect(() => {
-    result.isError && console.log(result.error.data)
-    result.isSuccess && navigate(`/transactions`)
+    result.isError && console.log(result.error.data);
+    result.isSuccess && navigate(`/transactions`);
   }, [result]);
 
   const handleChange = (name) => (event) => {
@@ -133,7 +131,7 @@ const EditTransaction = () => {
         };
         break;
     }
-    updateUserTransaction(transaction)
+    updateUserTransaction(transaction);
   };
 
   const cancel = () => {

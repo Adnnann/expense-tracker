@@ -1,8 +1,4 @@
-import {
-  getUserToken,
-  userToken,
-  signoutUser,
-} from '../../features/usersSlice';
+import { getUserToken, userToken, signoutUser } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Box, Grid } from '@material-ui/core';
@@ -14,11 +10,11 @@ import { useEffect, useState } from 'react';
 import RightPanelStatistics from './RightPanelStatistics';
 import Plots from './Charts';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
-import { 
-  setStatisticsOverviewLevel, 
+import {
+  setStatisticsOverviewLevel,
   setGroupingVarForCharts,
   setGroupingVar,
-  setFilterVarForCharts
+  setFilterVarForCharts,
 } from '../../features/statisticsSlice';
 import { setTransactionsOverviewLevel } from '../../features/transactionsSlice';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
@@ -50,10 +46,9 @@ const Statistics = () => {
     isLoading,
     isError,
     error,
-  } = useFetchUserTransactionsQuery( undefined, {
+  } = useFetchUserTransactionsQuery(undefined, {
     skip: skip,
   });
-
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -87,7 +82,7 @@ const Statistics = () => {
   };
 
   //set filter based on user input
-  
+
   const weeklyData = () => {
     dispatch(setGroupingVar('week'));
     dispatch(setTransactionsOverviewLevel('Weekly'));
@@ -128,7 +123,6 @@ const Statistics = () => {
   const buttons = ['Daily', 'Weekly', 'Monthly', 'Yearly'];
 
   return (
-    
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={4} lg={4} xl={4}>
         {/* Left side menu buttons */}
@@ -170,28 +164,28 @@ const Statistics = () => {
         </Box>
       </Grid>
       {isSuccess && userTransactions.length > 0 && (
-     <>
-      <Grid item xs={12} md={12} lg={12} xl={12}>
-        <LeftPanelStatistics />
-      </Grid>
+        <>
+          <Grid item xs={12} md={12} lg={12} xl={12}>
+            <LeftPanelStatistics />
+          </Grid>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          fontStyle: 'italic',
-          marginTop: '20px',
-        }}
-      >
-        <Plots />
-      </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              textAlign: 'center',
+              fontStyle: 'italic',
+              marginTop: '20px',
+            }}
+          >
+            <Plots />
+          </Box>
 
-      <Grid item xs={12} md={9} lg={9} xl={12}>
-        <RightPanelStatistics />
-      </Grid>
-      </>
+          <Grid item xs={12} md={9} lg={9} xl={12}>
+            <RightPanelStatistics />
+          </Grid>
+        </>
       )}
     </Grid>
   );

@@ -6,7 +6,7 @@ const PieChart = ({ income, expense }) => {
   //create pie chart to be displayed on dashboard
   const Plot = createPlotlyComponent(Plotly);
 
-  console.log('expense', expense, 'income', income)
+  console.log('expense', expense, 'income', income);
 
   const intToString = (num) => {
     num = num.toString().replace(/[^0-9.]/g, '');
