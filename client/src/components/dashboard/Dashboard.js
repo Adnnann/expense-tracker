@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-  getUserToken,
-  userToken,
-  signoutUser,
   cleanStore,
   setUserDataToDisplay,
 } from '../../features/usersSlice';
@@ -20,8 +17,8 @@ import LeftSidePanel from './LeftSidePanel';
 import RightSidePanel from './RightSidePanel';
 import Loader from '../utils/Loader';
 import { getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-import { useFetchUserQuery } from '../../features/userAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
+import { useFetchUserQuery } from '../../features/services/userAPI';
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();

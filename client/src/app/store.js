@@ -3,8 +3,9 @@ import usersReducer from '../features/usersSlice';
 import transactionsReducer from '../features/transactionsSlice';
 import exchangeRatesReducer from '../features/exchangeRatesSlice';
 import statisticsReducer from '../features/statisticsSlice';
-import { transactionsAPI } from '../features/transactionsAPI';
-import { userAPI } from '../features/userAPI';
+import { transactionsAPI } from '../features/services/transactionsAPI';
+import { userAPI } from '../features/services/userAPI';
+
 export const store = configureStore({
   reducer: {
     [transactionsAPI.reducerPath]: transactionsAPI.reducer,

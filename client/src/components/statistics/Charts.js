@@ -7,7 +7,7 @@ import {
   getGroupingVarForCharts,
 } from '../../features/statisticsSlice';
 import { useSelector } from 'react-redux';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
 import { calculateTotalIncomesAndExpenses } from '../utils/functions/helper-functions';
 
 const Plots = () => {

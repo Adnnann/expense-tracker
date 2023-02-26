@@ -13,19 +13,10 @@ import { useNavigate, useParams } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import {
-  fetchUserTransactionData,
-  fetchUserTransactions,
-  getUserTransactionData,
-  cleanTransactionUpdatedData,
-  updateUserTransaction,
-  getUpdatedUserTransaction,
-  getTransactionToEdit,
-} from '../../features/transactionsSlice';
+import { getTransactionToEdit } from '../../features/transactionsSlice';
 import {
   useFetchUserTransactionsQuery,
-  useUpdateUserTransactionMutation,
-} from '../../features/transactionsAPI';
+} from '../../features/services/transactionsAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {

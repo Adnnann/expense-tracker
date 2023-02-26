@@ -48,14 +48,14 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-    checkPassword: builder.mutation({
-      query: (userData) => ({
-        url: '/auth/signin',
-        method: 'POST',
-        body: userData,
-      }),
-      invalidatesTags: ['User'],
-    }),
+    // checkPassword: builder.mutation({
+    //   query: (userData) => ({
+    //     url: 'auth/signin',
+    //     method: 'POST',
+    //     body: userData,
+    //   }),
+    //   invalidatesTags: ['User'],
+    // }),
     updatePassword: builder.mutation({
       query: (user) => ({
         url: `api/user/${user.params}`,
@@ -93,6 +93,13 @@ export const userAPI = createApi({
         method: 'GET',
       }),
       invalidatesTags: ['User'],
+  }),
+  closeAccount: builder.mutation({
+    query: (params) => ({
+      url: `api/user/${params}`,
+      method: 'DELETE',
+    }),
+    invalidatesTags: ['User'],
     }),
   }),
 });

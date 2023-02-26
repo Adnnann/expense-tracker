@@ -11,17 +11,10 @@ import { useNavigate } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import { userToken, getUserToken, cleanTransactionData } from '../../features/usersSlice';
-import jwtDecode from 'jwt-decode';
 import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-import {
-  fetchUserTransactions,
-  createTransaction,
-  getTransactionData,
-} from '../../features/transactionsSlice';
-import { useCreateTransactionMutation } from '../../features/transactionsAPI';
+import { useCreateTransactionMutation } from '../../features/services/transactionsAPI';
 import { getCurrencyExchangeRates } from '../../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
@@ -168,22 +161,22 @@ const AddNewExpense = () => {
       
       case 'BAM':
         expense.amountInBAM = Number(expense.amount) || undefined
-        expense. amountInUSD= Number(expense.amount * 0.58) || undefined
-        expense. amountInEUR= Number(expense.amount * 0.51) || undefined
+        expense. amountInUSD= Number(expense.amount * currencyRates.data[0].USD) || undefined
+        expense. amountInEUR= Number(expense.amount * currencyRates.data[0].EUR) || undefined
       break;
       case 'USD':
-        expense.amountInBAM = Number(expense.amount * 1.72) || undefined
+        expense.amountInBAM = Number(expense.amount * currencyRates.data[1].BAM) || undefined
         expense.amountInUSD = Number(expense.amount)
-        expense.amountInEUR = Number(expense.amount * 0.88) || undefined
+        expense.amountInEUR = Number(expense.amount * currencyRates.data[1].EUR) || undefined
       break;
       case 'EUR':
-        expense.amountInBAM = Number(expense.amount * 1.96) || undefined
-        expense.amountInUSD = Number(expense.amount * 1.14) || undefined
+        expense.amountInBAM = Number(expense.amount * currencyRates.data[2].BAM) || undefined
+        expense.amountInUSD = Number(expense.amount * currencyRates.data[2].USD) || undefined
         expense.amountInEUR = Number(expense.amount)
       break;
     }
     //use mutation to add new expense
-    addTransaction(expense);
+    addExpense(expense);
   };
 
   return (

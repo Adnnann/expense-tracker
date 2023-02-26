@@ -1,16 +1,7 @@
 import React, { useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import MenuItem from '@mui/material/MenuItem';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import {
-  signoutUser,
-  getUserSigninData,
-  cleanStore,
-  reloginUser,
-  getUserToken,
-  getSavedExchangeRates,
-  saveExchangeRatesInDB,
   getUserDataToDisplay,
 } from '../../features/usersSlice';
 import { useDispatch } from 'react-redux';
@@ -22,20 +13,11 @@ import { useSelector } from 'react-redux';
 import dateFormat from 'dateformat';
 
 import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
 import { useState } from 'react';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
-import { fetchUserTransactions } from '../../features/transactionsSlice';
-import {
-  fetchCurrencyExchangeRates,
-  getCurrencyExchangeRates,
-} from '../../features/exchangeRatesSlice';
-import {
-  useFetchUserQuery,
-  useIsSignedUserQuery,
-  useSignoutUserMutation,
-} from '../../features/userAPI';
-import { setUserDataToDisplay } from '../../features/usersSlice';
+import { useSignoutUserMutation } from '../../features/services/userAPI';
+
+
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -87,10 +69,13 @@ const Header = () => {
   const navigate = useNavigate();
   const [signOut, result] = useSignoutUserMutation();
   const [anchorEl, setAnchorEl] = useState(null);
-
-  const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
-  const savedExchangeRates = useSelector(getSavedExchangeRates);
   const userDataForDisplaying = useSelector(getUserDataToDisplay);
+
+  useEffect(() => {
+    if (result.isSuccess) {
+      navigate('/');
+    }
+  }, [result.isSuccess]);
 
   const pages = [
     '/',
@@ -106,25 +91,6 @@ const Header = () => {
   ];
 
   const requestedPage = window.location.pathname;
-
-  useEffect(() => {
-    // if (!pages.includes(requestedPage)) {
-    //   navigate('/')
-    // }
-
-    if (currencyExchangeRates?.data?.USD > 0 && Object.values(savedExchangeRates).length === 0) {
-      dispatch(
-        saveExchangeRatesInDB({
-          rates: {
-            USD: currencyExchangeRates.data[0],
-            EUR: currencyExchangeRates.data[1],
-          },
-        }),
-      );
-
-      navigate('/dashboard');
-    }
-  }, []);
 
   const open = Boolean(anchorEl);
 
@@ -148,7 +114,6 @@ const Header = () => {
 
   const signout = () => {
     signOut();
-    dispatch(cleanStore());
     navigate('/');
   };
 

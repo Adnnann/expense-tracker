@@ -27,7 +27,7 @@ import {
 import LeftSidePanelData from './LeftSidePanelData';
 import SelectCurrency from './SelectCurrency';
 import { calculateIncomesAndExpenses, calculateTotal } from '../utils/functions/helper-functions';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
 
 const useStyles = makeStyles((theme) => ({
   buttonGroup: {

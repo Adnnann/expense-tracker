@@ -1,4 +1,3 @@
-import { getUserToken, userToken, signoutUser } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Grid } from '@material-ui/core';
@@ -14,7 +13,6 @@ import { Box } from '@mui/material';
 import LeftPanelTransactions from './LeftPanelTransactions';
 import { useEffect, useState } from 'react';
 import RightPanelTransactions from './RightPanelTransactions';
-import Menu from '@mui/material/Menu';
 import DropdownMenuButtons from '../utils/DropdownMenuButtons';
 import {
   getDeleteId,
@@ -30,19 +28,17 @@ import {
 import {
   useDeleteTransactionMutation,
   useFetchUserTransactionsQuery,
-} from '../../features/transactionsAPI';
-import {
-  getSelectedExchangeRate,
-  setSelectedExchangeRate,
-} from '../../features/exchangeRatesSlice';
+} from '../../features/services/transactionsAPI';
 import { intToString } from '../utils/functions/helper-functions';
 import {
   setStatisticsOverviewLevel,
   setGroupingVarForCharts,
   setFilterVarForCharts,
 } from '../../features/statisticsSlice';
-import { useFetchUserQuery } from '../../features/userAPI';
+import { useFetchUserQuery } from '../../features/services/userAPI';
 import { setUserDataToDisplay } from '../../features/usersSlice';
+import { getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
+
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -109,7 +105,7 @@ const Transactions = () => {
   const transactionId = useSelector(getDeleteId);
   const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
   const [deleteTransaction, result] = useDeleteTransactionMutation();
-  const [skip, setSkip] = useState(false);
+  const currencyRates = useSelector(getSelectedExchangeRate);
 
   const {
     data: userTransactions,

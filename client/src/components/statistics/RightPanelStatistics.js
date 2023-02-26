@@ -9,19 +9,18 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-import { getSelectedExchangeRate,
-} from '../../features/exchangeRatesSlice';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
 import {
   getFilterVarForCharts,
   getGroupingVarForCharts,
 } from '../../features/statisticsSlice';
+import { getCurrencyExchangeRates, getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
 const RightPanelStatistics = () => {
   const { data: userTransactions, isSuccess } = useFetchUserTransactionsQuery();
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const filterVarForCharts = useSelector(getFilterVarForCharts);
+ const exchangeRates = useSelector(getCurrencyExchangeRates);
   const selectedExchangeRate = useSelector(getSelectedExchangeRate);
-
   //define table columns
   const columns = [
     {

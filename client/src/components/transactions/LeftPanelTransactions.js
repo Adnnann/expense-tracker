@@ -6,28 +6,26 @@ import DonutChart from '../dashboard/DonutChart';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { getGroupingVar } from '../../features/transactionsSlice';
-import {
-  getCurrencyExchangeRates,
-  getSelectedExchangeRate,
-  setSelectedExchangeRate,
-} from '../../features/exchangeRatesSlice';
 import SelectCurrency from '../dashboard/SelectCurrency';
 import { calculateIncomesAndExpenses } from '../utils/functions/helper-functions';
 import { calculateTotal } from '../utils/functions/helper-functions';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
+import { getCurrencyExchangeRates, getSelectedExchangeRate } from '../../features/exchangeRatesSlice';
 const LeftPanelTransactions = () => {
   const dispatch = useDispatch();
   const [selectedValue, setSelectedValue] = useState('BAM');
   const EURandUSDExchangeRates = useSelector(getCurrencyExchangeRates);
   const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
   const groupingVar = useSelector(getGroupingVar);
-  const [skip, setSkip] = useState(true);
+  const currencyExchangeRates = useSelector(getCurrencyExchangeRates);
+  const selectedExchangeRate = useSelector(getSelectedExchangeRate);
+
 
   const {
     data: userTransactions,
     isSuccess,
   } = useFetchUserTransactionsQuery({
-    skip: skip,
+    skip: true,
   });
 
   //based on user selection of currency use appropriate coeficients to show all data in differenct currencies. Default values is BAM, hence multiple by one.

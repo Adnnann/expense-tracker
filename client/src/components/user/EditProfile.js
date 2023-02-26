@@ -8,16 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
 import { makeStyles } from '@material-ui/core';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  fetchUserData,
-  updateUserData,
-  getUpdatedUserData,
-  getUserData,
-  userDataToDisplay,
-  cleanUpdatedUserData,
-  userToken,
-  getUserToken,
-} from '../../features/usersSlice';
+import { userDataToDisplay } from '../../features/usersSlice';
 import { useNavigate, useParams } from 'react-router';
 
 const useStyles = makeStyles((theme) => ({
@@ -75,28 +66,17 @@ const EditProfile = () => {
   });
 
   const params = useParams();
+  const [updateUserData, result] = useUpdateUserDataMutation();
 
   useEffect(() => {
-    dispatch(fetchUserData(params.userId));
-    //check if user token exists.
-    dispatch(userToken());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
+
     setValues({
       firstName: userData.firstName,
       lastName: userData.lastName,
       nickname: userData.nickname,
     });
 
-    if (updatedUserData.hasOwnProperty('message')) {
-      dispatch(cleanUpdatedUserData());
+    if (updateUserData.isSuccess) {
       navigate('/dashboard');
     }
   }, [params.userId, updatedUserData.message, dispatch, userData.firstName]);
@@ -112,7 +92,7 @@ const EditProfile = () => {
       lastName: values.lastName || undefined,
       nickname: values.nickname || undefined,
     };
-    dispatch(updateUserData(user));
+    updateUserData(user);
   };
 
   const cancel = () => {
@@ -152,12 +132,10 @@ const EditProfile = () => {
             <br />
             <br />
 
-            {updatedUserData.hasOwnProperty('error') && (
+            {updateUserData.isError && (
               <Typography component='p' color='error'>
                 <Icon color='error' className={classes.error}></Icon>
-                {updatedUserData.error.split(':')[2]
-                  ? updatedUserData.error.split(':')[2]
-                  : updatedUserData.error}
+                {updateUserData.error}
               </Typography>
             )}
           </CardContent>

@@ -13,16 +13,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  getUser,
-  createUser,
-  cleanRegisteredUserData,
-  getCloseAccountData,
-  cleanStore,
-} from '../features/usersSlice';
 import { useNavigate } from 'react-router';
 import TextFields from '../components/utils/TextFieldsGenerator';
-import { useSignUpGoogleUserMutation, useSignUpUserMutation } from '../features/userAPI';
+import { useSignUpUserMutation } from '../features/services/userAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -62,9 +55,7 @@ const useStyles = makeStyles((theme) => ({
 const Signup = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const userData = useSelector(getUser);
   const navigate = useNavigate();
-  const closeAccountData = useSelector(getCloseAccountData);
   const [successModalWindow, setSuccessModalWindow] = useState(false);
 
   const [signUpUser, result] = useSignUpUserMutation();

@@ -13,19 +13,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  fetchUserData,
-  closeAccount,
-  passwordCheck,
-  getPasswordCheckData,
-  getUserToken,
-  userToken,
-  getUserSigninData,
   getDeleteAccountModal,
   setDeleteAccountModal,
-  getCloseAccountData,
   cleanStore,
 } from '../../features/usersSlice';
 import { useNavigate, useParams } from 'react-router';
+import { useDeleteUserMutation, useCheckPasswordMutation } from '../../features/services/userAPI';
 
 const StyledModal = styled(ModalUnstyled)`
   position: fixed;
@@ -105,31 +98,22 @@ const DeleteAccount = () => {
 
   const params = useParams();
 
+  const [deleteUser, result] = useDeleteUserMutation();
+const [checkPassword, resultCheckPassword] = useCheckPasswordMutation();
   useEffect(() => {
-    //check if user token exists.
-    dispatch(userToken());
-    //In case user tried to visit url /protected without token, redirect
-    //to signin page
-    if (
-      token === 'Request failed with status code 500' ||
-      token === 'Request failed with status code 401'
-    ) {
-      navigate('/');
-      window.location.reload();
-    }
 
     dispatch(fetchUserData(params.userId));
 
-    if (userPasswordCheckData.hasOwnProperty('token')) {
-      dispatch(closeAccount(params.userId));
+    if (resultCheckPassword.isSuccess) {
+      deleteUser(params.userId);
     }
 
-    if (closeAccountData.hasOwnProperty('message')) {
+    if (result.isSuccess) {
       dispatch(setDeleteAccountModal(false));
       dispatch(cleanStore());
       navigate('/signup');
     }
-  }, [token.length, params.userId, userPasswordCheckData.token, closeAccountData.message]);
+  }, [result.isSuccess, resultCheckPassword.isSuccess]);
 
   const handleChange = (name) => (event) => {
     setValues({ [name]: event.target.value });
@@ -140,7 +124,7 @@ const DeleteAccount = () => {
       email: userData.user.email,
       password: values.password || undefined,
     };
-    dispatch(passwordCheck(user));
+    useCheckPasswordMutation(user);
     dispatch(setDeleteAccountModal(false));
   };
 
@@ -168,10 +152,10 @@ const DeleteAccount = () => {
           <br />
           <br />
 
-          {userPasswordCheckData.hasOwnProperty('error') ? (
+          {resultCheckPassword.isError ? (
             <Typography component='p' color='error'>
               <Icon color='error' className={classes.error}></Icon>
-              Incorrect password
+              {resultCheckPassword.error}
             </Typography>
           ) : null}
         </CardContent>

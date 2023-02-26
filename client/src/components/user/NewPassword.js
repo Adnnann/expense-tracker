@@ -10,20 +10,11 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  getPasswordCheckData,
-  getUpdatedUserData,
-  passwordCheck,
-  updateUserPassword,
-  cleanUpdatedUserData,
-  cleanPasswordCheckData,
-  getUserSigninData,
-} from '../../features/usersSlice';
 import { useNavigate } from 'react-router';
 import { Typography } from '@material-ui/core';
 import { Icon } from '@material-ui/core';
 import { useEffect } from 'react';
-import { useCheckPasswordMutation } from '../../features/userAPI';
+import { useCheckPasswordMutation } from '../../features/services/userAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -69,6 +60,7 @@ const EditPassword = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [checkOldPassword, checkedOldPasswordResult] = useCheckPasswordMutation();
+  const [updatePassword, updatedPasswordResult] = useUpdatePasswordMutation();
 
   const userData = useSelector(getUserSigninData);
   const navigate = useNavigate();
@@ -81,18 +73,22 @@ const EditPassword = () => {
   });
 
   useEffect(() => {
+    const user = {
+      params: userData.user._id,
+      password: values.newPassword,
+    };
     // if user after password check if cleared send update password request to server
-    checkedOldPasswordResult.isSuccess;
-  }, []);
+    checkedOldPasswordResult.isSuccess && updatePassword({ user });
+  
+    // if password is updated redirect to home page
+    updatedPasswordResult.isSuccess && navigate('/');
+  }, [checkedOldPasswordResult.isSuccess, updatedPasswordResult.isSuccess]);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const user = {
-    params: userData.user._id,
-    password: values.newPassword,
-  };
+
   const clickSubmit = () => {
     // prepare data for authorization of the password
     const checkData = {
@@ -110,12 +106,10 @@ const EditPassword = () => {
       setValues({ ...values, error: '' });
     }
     // if cleared send user data to server to match with user data
-    dispatch(passwordCheck(checkData));
+    checkOldPassword(checkData);
   };
   // dispatch clear functions to get clean store slices for further actions
   const redirectToDashboard = () => {
-    dispatch(cleanUpdatedUserData());
-    dispatch(cleanPasswordCheckData());
     navigate('/dashboard');
   };
 

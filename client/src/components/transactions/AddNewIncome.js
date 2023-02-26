@@ -11,14 +11,12 @@ import { useNavigate } from 'react-router';
 import NativeSelect from '@mui/material/NativeSelect';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import { userToken, getUserToken, cleanTransactionData } from '../../features/usersSlice';
 import jwtDecode from 'jwt-decode';
 import { Typography } from '@material-ui/core';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-import { fetchUserTransactions } from '../../features/transactionsSlice';
-import { createTransaction, getTransactionData } from '../../features/transactionsSlice';
-import { useCreateTransactionMutation } from '../../features/transactionsAPI';
+import { useCreateTransactionMutation } from '../../features/services/transactionsAPI';
+import { getCurrencyExchangeRates } from '../../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -95,6 +93,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const AddNewIncome = () => {
+  const currencyRates = useSelector(getCurrencyExchangeRates)
   const [addTransaction, result] = useCreateTransactionMutation();
 
   const classes = useStyles();
@@ -161,20 +160,19 @@ const AddNewIncome = () => {
 
     //based on user currency input calculate all values in remaning two currencies
     switch (currency) {
-      
       case 'BAM':
         income.amountInBAM = Number(income.amount) || undefined
-        income. amountInUSD= Number(income.amount * 0.58) || undefined
-        income. amountInEUR= Number(income.amount * 0.51) || undefined
+        income.amountInUSD= Number(income.amount * currencyRates.data[0].USD) || undefined
+        income.amountInEUR= Number(income.amount * currencyRates.data[0].EUR) || undefined
       break;
       case 'USD':
-        income.amountInBAM = Number(income.amount * 1.72) || undefined
+        income.amountInBAM = Number(income.amount * currencyRates.data[1].BAM) || undefined
         income.amountInUSD = Number(income.amount)
-        income.amountInEUR = Number(income.amount * 0.88) || undefined
+        income.amountInEUR = Number(income.amount * currencyRates.data[1].EUR) || undefined
       break;
       case 'EUR':
-        income.amountInBAM = Number(income.amount * 1.96) || undefined
-        income.amountInUSD = Number(income.amount * 1.14) || undefined
+        income.amountInBAM = Number(income.amount * currencyRates.data[2].BAM) || undefined
+        income.amountInUSD = Number(income.amount * currencyRates.data[2].USD) || undefined
         income.amountInEUR = Number(income.amount)
       break;
     }
@@ -209,7 +207,7 @@ const AddNewIncome = () => {
                 className={classes.buttonGroup}
                 onClick={() => navigate('/transactions/addNewExpense')}
               >
-                Expense
+                Income
               </Button>
             </ButtonGroup>
           </div>

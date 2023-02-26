@@ -5,16 +5,12 @@ import config from '../config/config'
 import errorHandler from './helpers/dbErrorHandlers'
 
 const signIn = (req, res) => {
-    User.findOne({'email': req.body.email},(err, user) => {
+    User.findOne({email: req.body.email},(err, user) => {
         if(err || !user){
-            const user = new User(req.body)
-            user.save((err, result) => {
-                if(err) {
-                    return res.status(400).json({error: 'Unable to create a new user.'})
-                }else{
-                    return res.status(400).json({message: 'Successfully created a new user.'})
-                }
-            })
+            return res.status(400).json('User not found')
+        }
+        if(!user.authenticate(req.body.password)){
+            return res.status(401).json('Email and password do not match')
         }
 
         const token = jwt.sign({_id: user._id, email:user.email, name:user.name}, config.secret)
@@ -25,10 +21,10 @@ const signIn = (req, res) => {
                 _id:user._id, 
                 firstName: user.firstName, 
                 lastName: user.lastName,
-                nickname: user.nickname, 
                 email: user.email
             }
         })
+
     })
 }
 
@@ -73,14 +69,9 @@ const signUpGoogleUser = (req, res) => {
 }
 
 
-    
-
-
-
-
 const signOut = (req, res) => {
     res.clearCookie('userJwtToken')
-    res.send({message:'User signed out'})
+    res.status(200).json('User signed out')
 }
 
 

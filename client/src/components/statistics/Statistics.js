@@ -1,4 +1,4 @@
-import { getUserToken, userToken, signoutUser, setUserDataToDisplay } from '../../features/usersSlice';
+import { setUserDataToDisplay } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Box, Grid } from '@material-ui/core';
@@ -16,8 +16,9 @@ import {
   setGroupingVar,
 } from '../../features/statisticsSlice';
 import { setTransactionsOverviewLevel } from '../../features/transactionsSlice';
-import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
-import { useFetchUserQuery } from '../../features/userAPI';
+import { useFetchUserTransactionsQuery } from '../../features/services/transactionsAPI';
+import { useFetchUserQuery } from '../../features/services/userAPI';
+import { getCurrencyExchangeRates } from '../../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -58,6 +59,7 @@ const Statistics = () => {
   const open = Boolean(anchorEl);
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
+  const currencyRates = useSelector(getCurrencyExchangeRates);
 
   useEffect(() => {
   

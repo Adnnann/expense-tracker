@@ -3,26 +3,20 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
 import ButtonGroup from '@mui/material/ButtonGroup';
-import {GoogleLogin } from 'react-google-login';
+//import {GoogleLogin } from 'react-google-login';
 import GoogleIcon from '@mui/icons-material/Google';
 import { makeStyles } from '@material-ui/core';
-import {
-  signinUser,
-  getUserSigninData,
-  userToken,   
-  setUserDataToDisplay,
-
-} from '../features/usersSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { setUserDataToDisplay } from '../features/usersSlice';
+import { useDispatch  } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
-import { useSigninUserMutation, useSignUpGoogleUserMutation } from '../features/userAPI';
+import { useSigninUserMutation, useSignUpGoogleUserMutation } from '../features/services/userAPI';
 import TextFields from '../components/utils/TextFieldsGenerator';
 import { fetchCurrencyExchangeRates } from '../features/exchangeRatesSlice';
+import {GoogleLogin, useGoogleLogin} from '@react-oauth/google'
+import jwtDecode from 'jwt-decode';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -61,7 +55,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Signin = () => {
 
-  const KEY = process.env.REACT_APP_KEY;
+  const KEY = process.env.REACT_APP_GOOGLE_KEY;
+
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -75,16 +70,14 @@ const Signin = () => {
   const [signInUser, result] = useSigninUserMutation();
   const [signUpGoogleUser, resultGoogleSignUp] = useSignUpGoogleUserMutation();
   
-
   useEffect(() => {
     if (result.isSuccess || resultGoogleSignUp.isSuccess) {
-      dispatch(
-        setUserDataToDisplay(resultGoogleSignUp.data));
+
+      dispatch(setUserDataToDisplay(resultGoogleSignUp.data));
       dispatch(fetchCurrencyExchangeRates())
-      dispatch(userToken());
       navigate('/dashboard');
-    }
-  }, [result, resultGoogleSignUp]);
+  }
+}, [result, resultGoogleSignUp]);
 
   // send request to server to login user and in case there are errors collect error
   const clickSubmit = () => {
@@ -115,33 +108,30 @@ const Signin = () => {
 
 
 const logIn = (res) => {
-    if(res){
+
+
+const {family_name, 
+       given_name, 
+       email,
+       jti
+}  = jwtDecode(res.credential)
 
       const user = {
-        email: res.profileObj.email,
-        password: res.profileObj.googleId,
-        firstName: res.profileObj.givenName,
-        lastName: res.profileObj.familyName,
+        email: email,
+        firstName: given_name,
+        lastName: family_name,
+        password: jti,
       };
-
       signUpGoogleUser(user)
-      
-      }
-
-      setLogin(false)
-      setLogout(true)
-    }
-  
+}
+  const errorMessage = (error) => {
+    console.log(error);
+};
 
 const logOut = () => {
-
   const auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut()
   .then(auth2.disconnect())
-  
-  setLogin(true)
-  setLogout(false)
-  setUserID("")
 }
 
   return (
@@ -185,18 +175,25 @@ const logOut = () => {
           Login
         </Button>
    
-        <GoogleLogin
+        {/* <GoogleLogin
         clientId={`${KEY}.apps.googleusercontent.com`}
         onSuccess={logIn}
         onFailure={logIn}
         cookiePolicy={'single_host_origin'}
         render={renderProps=>(
-            <Button startIcon={<GoogleIcon/>}
+             */
+            
+      /* <Button startIcon={<GoogleIcon/>}
             style={{margin:"0 auto", display:"-ms-flexbox", minHeight:"60px", maxWidth:"200px", backgroundColor:'red'}} color='primary' variant='contained' 
             onClick={renderProps.onClick}>Google Sign In</Button>
-        )}
+        //)} */}
+        <GoogleLogin
+        referrerpolicy="origin"
+         onSuccess={logIn} 
+         onError={errorMessage} 
+         buttonText="Login" />
       
-        /> 
+        
       </ButtonGroup>
       </CardActions>
       
