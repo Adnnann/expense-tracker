@@ -196,30 +196,11 @@ const Header = () => {
               display: { xs: 'none', md: 'block' },
               marginTop: { xs: '4px' },
               marginBottom: { xs: '4px' },
+              marginLeft:'30px'
             }}
             alt='Expense tracker'
             src='https://joyofandroid.com/wp-content/uploads/2019/06/monefy-money-manager-best-android-business-expense-tracker-finance-financial-income-list-add-deduct-minus-computer-smartphone.png'
           />
-
-          <Typography
-            variant={
-              window.location.pathname === '/' ||
-              window.location.pathname === '/signin' ||
-              window.location.pathname === '/signup'
-                ? 'h4'
-                : 'h6'
-            }
-            className={
-              window.location.pathname === '/' ||
-              window.location.pathname === '/signin' ||
-              window.location.pathname === '/signup'
-                ? classes.title
-                : classes.dashboardTitle
-            }
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          >
-            Personal Expense Tracker and Analyst
-          </Typography>
           <br />
 
           {window.location.pathname === '/signup' || window.location.pathname === '/' ? null : (
@@ -252,7 +233,7 @@ const Header = () => {
             </Typography>
             <Typography
               component='p'
-              style={{ fontSize: '10px' }}
+              style={{ fontSize: '10px', marginBottom:"20px" }}
               sx={{ display: { xs: 'none', md: 'block' } }}
             >
               {dateFormat(date, 'dddd, dd mmmm')}
