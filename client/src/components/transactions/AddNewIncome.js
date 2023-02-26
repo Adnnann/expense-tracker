@@ -98,18 +98,11 @@ const AddNewIncome = () => {
   const [addTransaction, result] = useCreateTransactionMutation();
 
   const classes = useStyles();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const transactionData = useSelector(getTransactionData);
-  const token = useSelector(getUserToken);
-
-  console.log('token', token);
-
   const [currency, setCurrency] = useState('BAM');
   const [values, setValues] = useState({
-    userId: 1, //jwtDecode(token.message)._id,
     title: '',
-    amount: '',
+    amount: 0,
     currency: '',
     valueInBAM: '',
     valueInUSD: '',
@@ -125,79 +118,69 @@ const AddNewIncome = () => {
   }, [result]);
 
   const handleChange = (name) => (event) => {
-    setValues({ ...values, [name]: event.target.value });
-  };
 
+  if(name === 'amount'){
+    if(String(event.target.value).charAt(0) === "0"){
+      setValues({ ...values, [name]: event.target.value, error:'Number cannot start with 0!' });
+    }else if(event.target.value.match(/^[0-9]+$/)){
+      setValues({ ...values, [name]: Number(event.target.value), error:'' })
+    }else if(!event.target.value.match(/^[0-9]+$/) && event.target.value !== ''){
+      setValues({ ...values, [name]: event.target.value, error:'Please enter a valid number' });
+    }else{
+      setValues({ ...values, [name]: event.target.value, error:'' });
+    }
+  }else{
+    if(event.target.value.charAt(0).match(/^[0-9]+$/)){
+      setValues({ ...values, [name]: event.target.value, error:'Transaction name cannot start with number' });
+    }else if(event.target.value.length < 5){
+      setValues({ ...values, [name]: event.target.value, error:'Transaction name must be at least 5 characters long' });
+    }else{
+      setValues({ ...values, [name]: event.target.value, error:'' });
+    }
+}
+};
   const currencyHandleChange = (event) => {
     setCurrency(event.target.value);
   };
 
   const clickSubmit = () => {
+
     let income = {
-      userId: '',
-      title: values.title || undefined,
+      title: values.title,
       amount: values.amount,
-      amountInBAM: '',
-      amountInUSD: '',
-      amountInEUR: '',
       day: date.format(new Date(), 'dddd'),
       week: 'Week ' + DateTime.now().weekNumber,
       month: date.format(new Date(), 'MMM'),
       year: date.format(new Date(), 'YYYY'),
       currency: currency || undefined,
-      type: '',
+      amountInBAM:0,
+      amountInEUR:0,
+      amountInUSD: 0,
+      type: 'income',
     };
 
     //based on user currency input calculate all values in remaning two currencies
     switch (currency) {
+      
       case 'BAM':
-        income = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(income.amount) || undefined,
-          amountInUSD: Number(income.amount * 0.58) || undefined,
-          amountInEUR: Number(income.amount * 0.51) || undefined,
-          currency: currency || undefined,
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          type: 'income',
-        };
-        break;
+        income.amountInBAM = Number(income.amount) || undefined
+        income. amountInUSD= Number(income.amount * 0.58) || undefined
+        income. amountInEUR= Number(income.amount * 0.51) || undefined
+      break;
       case 'USD':
-        income = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(income.amount * 1.72) || undefined,
-          amountInUSD: Number(income.amount),
-          amountInEUR: Number(income.amount * 0.88) || undefined,
-          currency: currency || undefined,
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          type: 'income',
-        };
-        break;
+        income.amountInBAM = Number(income.amount * 1.72) || undefined
+        income.amountInUSD = Number(income.amount)
+        income.amountInEUR = Number(income.amount * 0.88) || undefined
+      break;
       case 'EUR':
-        income = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(income.amount * 1.96) || undefined,
-          amountInUSD: Number(income.amount * 1.14) || undefined,
-          amountInEUR: Number(income.amount),
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          currency: currency || undefined,
-          type: 'income',
-        };
-        break;
+        income.amountInBAM = Number(income.amount * 1.96) || undefined
+        income.amountInUSD = Number(income.amount * 1.14) || undefined
+        income.amountInEUR = Number(income.amount)
+      break;
     }
     //use mutation to add new income
     addTransaction(income);
+
   };
 
   return (
@@ -260,7 +243,15 @@ const AddNewIncome = () => {
             </Typography>
           )
         }
-
+        {
+          //display error returned from server
+          values.error !== '' && (
+            <Typography component='p' color='error'>
+              <Icon color='error' className={classes.error}></Icon>
+              {values.error}
+            </Typography>
+          )
+        }
         <span>
           <div style={{ display: 'inline-flex', padding: '0', marginLeft: '15px' }}>
             <FormControl>

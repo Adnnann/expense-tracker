@@ -21,6 +21,8 @@ import {
   cleanStore,
 } from '../features/usersSlice';
 import { useNavigate } from 'react-router';
+import TextFields from '../components/utils/TextFieldsGenerator';
+import { useSignUpGoogleUserMutation, useSignUpUserMutation } from '../features/userAPI';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -63,6 +65,10 @@ const Signup = () => {
   const userData = useSelector(getUser);
   const navigate = useNavigate();
   const closeAccountData = useSelector(getCloseAccountData);
+  const [successModalWindow, setSuccessModalWindow] = useState(false);
+
+  const [signUpUser, result] = useSignUpUserMutation();
+
   const [values, setValues] = useState({
     firstName: '',
     lastName: '',
@@ -75,10 +81,11 @@ const Signup = () => {
   });
 
   useEffect(() => {
-    if (closeAccountData?.message || closeAccountData?.error) {
-      dispatch(cleanStore());
-    }
-  }, [closeAccountData.message, closeAccountData.error]);
+    if(result.isSuccess){
+      setValues({ ...values, error: '', open: true });
+      setSuccessModalWindow(true);
+    } 
+  }, [result]);
 
   const handleChange = (name) => (event) => {
     setValues({ ...values, [name]: event.target.value });
@@ -88,7 +95,6 @@ const Signup = () => {
     const user = {
       firstName: values.firstName || undefined,
       lastName: values.lastName || undefined,
-      nickname: values.nickname || undefined,
       email: values.email || undefined,
       password: values.password || undefined,
       confirmationPassword: values.confirmationPassword || undefined,
@@ -104,16 +110,23 @@ const Signup = () => {
       setValues({ ...values, error: '' });
     }
 
-    dispatch(createUser(user));
+    signUpUser(user);
 
-    if (userData.hasOwnProperty('message')) {
-      setValues({ ...values, error: '', open: true });
-    }
   };
   const redirectToSignin = () => {
     navigate('/');
     dispatch(cleanRegisteredUserData());
   };
+
+  const fields = ['firstName', 'lastName', 'email', 'password','confirmationPassword'];
+  const textFieldValues = [values.firstName, values.lastName, values.email, values.password, values.confirmationPassword];
+  const changeHandler = [handleChange('firstName'), handleChange('lastName'), handleChange('email'), handleChange('password'), handleChange('confirmationPassword')];
+  const labels = ['First Name', 'Last Name', 'Email', 'Password','Repeat Password'];
+  const id = ['firstName', 'lastName', 'email', 'password','password'];
+  const buttonClasses = Array(5).fill(classes.textField);
+  const types = ['text', 'text', 'email', 'password','password']
+
+console.log(result)
   return (
     <div>
       <Card className={classes.card}>
@@ -122,67 +135,17 @@ const Signup = () => {
             Sign Up
           </Typography>
 
-          <TextField
-            id='firstName'
-            placeholder='First Name'
-            className={classes.textField}
-            value={values.firstName}
-            onChange={handleChange('firstName')}
-            margin='normal'
+          <TextFields
+            fields={fields}
+            values={textFieldValues}
+            changeHandler={changeHandler}
+            labels={labels}
+            id={id}
+            buttonClasses={buttonClasses}
+            types={types}
           />
-          <br />
-
-          <TextField
-            id='lastName'
-            placeholder='Last Name'
-            className={classes.textField}
-            value={values.lastName}
-            onChange={handleChange('lastName')}
-            margin='normal'
-          />
-          <br />
-
-          <TextField
-            id='nickname'
-            placeholder='Nickname'
-            className={classes.textField}
-            value={values.nickname}
-            onChange={handleChange('nickname')}
-            margin='normal'
-          />
-          <br />
-
-          <TextField
-            id='email'
-            type='email'
-            placeholder='Email'
-            className={classes.textField}
-            value={values.email}
-            onChange={handleChange('email')}
-            margin='normal'
-          />
-          <br />
-
-          <TextField
-            id='password'
-            type='password'
-            placeholder='Password'
-            className={classes.textField}
-            value={values.password}
-            onChange={handleChange('password')}
-            margin='normal'
-          />
-
-          <TextField
-            id='confirmationPassword'
-            type='password'
-            placeholder='Confirmation Password'
-            className={classes.textField}
-            value={values.confirmationPassword}
-            onChange={handleChange('confirmationPassword')}
-            margin='normal'
-          />
-          <br />
+            
+            
           <br />
 
           {values.error ? (
@@ -191,10 +154,10 @@ const Signup = () => {
               {values.error}
             </Typography>
           ) : (
-            userData.hasOwnProperty('error') && (
+            result.isError && (
               <Typography component='p' color='error'>
                 <Icon color='error' className={classes.error}></Icon>
-                {userData.error.split(':')[2] ? userData.error.split(':')[2] : userData.error}
+                {result.error.data}
               </Typography>
             )
           )}
@@ -227,7 +190,7 @@ const Signup = () => {
         </CardActions>
       </Card>
 
-      <Dialog open={userData.hasOwnProperty('message') ? true : false}>
+      <Dialog open={successModalWindow ? true : false}>
         <DialogTitle>New Account</DialogTitle>
         <DialogContent>
           <DialogContentText>New account successfuly created.</DialogContentText>

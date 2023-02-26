@@ -20,15 +20,20 @@ export const userAPI = createApi({
         return response;
       },
     }),
-    createUser: builder.mutation({
+    signUpGoogleUser: builder.mutation({
       query: (user) => ({
-        url: 'api/user',
+        url: '/auth/google',
         method: 'POST',
         body: user,
       }),
-      transformResponse: (response, meta, arr) => {
-        return response;
-      },
+    invalidatesTags: ['User'],
+    }),
+    signUpUser: builder.mutation({
+      query: (user) => ({
+        url: 'api/users',
+        method: 'POST',
+        body: user,
+      }),
       invalidatesTags: ['User'],
     }),
     updateUser: builder.mutation({
@@ -89,27 +94,19 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-    reloginUser: builder.mutation({
-      query: (token) => ({
-        url: '/auth/relogin',
-        method: 'POST',
-        body: { token },
-      }),
-      invalidatesTags: ['User'],
-    }),
   }),
 });
 
 export const {
   useFetchUserQuery,
-  useCreateUserMutation,
+  useSignUpUserMutation,
   useUpdateUserMutation,
   useDeleteUserMutation,
   useSigninUserMutation,
   useSignoutUserMutation,
   useUserTokenMutation,
-  useReloginUserMutation,
   useCheckPasswordMutation,
   useUpdatePasswordMutation,
   useIsSignedUserQuery,
+  useSignUpGoogleUserMutation,
 } = userAPI;

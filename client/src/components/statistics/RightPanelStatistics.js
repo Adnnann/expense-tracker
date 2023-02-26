@@ -9,18 +9,14 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import date from 'date-and-time';
 import { DateTime } from 'luxon';
-import {
-  getCurrencyExchangeRates,
-  getSelectedExchangeRate,
+import { getSelectedExchangeRate,
 } from '../../features/exchangeRatesSlice';
-import { getUserTransactions } from '../../features/transactionsSlice';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
 import {
-  getStatisticsOverviewLevel,
   getFilterVarForCharts,
   getGroupingVarForCharts,
 } from '../../features/statisticsSlice';
-const RightPanelSatistics = () => {
+const RightPanelStatistics = () => {
   const { data: userTransactions, isSuccess } = useFetchUserTransactionsQuery();
   const groupingVarForCharts = useSelector(getGroupingVarForCharts);
   const filterVarForCharts = useSelector(getFilterVarForCharts);
@@ -54,7 +50,7 @@ const RightPanelSatistics = () => {
   function createData(recent, amount, edit) {
     return { recent, amount, edit };
   }
-
+  
   const rows = [];
 
   if (isSuccess && userTransactions.length > 0) {
@@ -161,4 +157,4 @@ const RightPanelSatistics = () => {
   );
 };
 
-export default RightPanelSatistics;
+export default RightPanelStatistics;

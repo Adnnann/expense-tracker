@@ -26,8 +26,6 @@ const LeftPanelTransactions = () => {
   const {
     data: userTransactions,
     isSuccess,
-    isError,
-    isLoading,
   } = useFetchUserTransactionsQuery({
     skip: skip,
   });
@@ -47,8 +45,7 @@ const LeftPanelTransactions = () => {
     }
   };
 
-  console.log('test', isSuccess, userTransactions);
-
+ 
   return (
     <Box
       sx={{

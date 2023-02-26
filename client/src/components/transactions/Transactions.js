@@ -41,7 +41,8 @@ import {
   setGroupingVarForCharts,
   setFilterVarForCharts,
 } from '../../features/statisticsSlice';
-
+import { useFetchUserQuery } from '../../features/userAPI';
+import { setUserDataToDisplay } from '../../features/usersSlice';
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -103,7 +104,7 @@ const Transactions = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const token = useSelector(getUserToken);
+
   //token id will be sent to dispatcher to make delete request
   const transactionId = useSelector(getDeleteId);
   const selectedCurrencyRate = useSelector(getSelectedExchangeRate);
@@ -116,13 +117,23 @@ const Transactions = () => {
     isLoading,
     isError,
     error,
-  } = useFetchUserTransactionsQuery(undefined, {
-    skip: skip,
-  });
+  } = useFetchUserTransactionsQuery();
 
+  const {
+    data: userData,
+    isSuccess:isFetchedUser,
+  } = useFetchUserQuery(undefined,{
+      skip:!userTransactions,
+  })
+  
   useEffect(() => {
-    error?.data && navigate('/');
-  }, [error]);
+  
+  error?.data && navigate('/');
+  
+  isFetchedUser && dispatch(setUserDataToDisplay(userData));
+   
+  
+  }, [isFetchedUser, error]);
 
   const redirectTosignin = () => {
     navigate('/');
@@ -132,7 +143,6 @@ const Transactions = () => {
   const filter = useSelector(getFilter);
   const groupingVar = useSelector(getGroupingVar);
   const transactionsOverviewLevel = useSelector(getTransactionsOverviewLevel);
-  const IDOfTransactionToDelete = useSelector(getDeleteId);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

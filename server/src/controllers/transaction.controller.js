@@ -5,12 +5,18 @@ import jwtDecode from 'jwt-decode'
 
 const createTransaction = (req, res) => {
 
+    if(req.body.amount < 1 || req.body.amount === ''){
+        return res.status(400).json('Amount cannot be empty!')
+    }
+
     const transaction = new Transaction(req.body) 
+
+    transaction.userId = jwtDecode(req.cookies.userJwtToken)._id
     transaction.save((err)=>{
         if(err){
             return res.status(400).json(dbErrorHandlers.getErrorMessage(err))
         }
-        return res.status(200).send({message: 'Transaction successfuly created'})
+        return res.status(200).send({message: 'Transaction successfully created'})
     })
 }
 const getTransactions = (req, res) => {
@@ -19,25 +25,25 @@ const getTransactions = (req, res) => {
     const userId = jwtDecode(req.cookies.userJwtToken)._id
     //filter data - get transactions for last three days
     Transaction.find({})
-    .where('userId').equals(userId)
-    //sort data in descinding order
+    .where('userId')
+    .equals(userId)
+    //sort data in descending order
     .sort({"created":-1})
     .exec((err, transactions) => {
-       
         if(err){
-            return res.status(400).json({error:dbErrorHandlers.getErrorMessage(err)})
+            return res.status(400).json(dbErrorHandlers.getErrorMessage(err))
         }
-       return res.send({message:transactions})
+       return res.status(200).json({message:transactions})
     })
 } 
 
 
 const getTransaction =  (req, res) => {
-    res.status(200).json(req.profile)
+    return res.status(200).json(req.profile)
 }
 const updateTransaction = (req, res, next) => {
 
-    let transaction = req.profile
+    let transaction = req.transaction
     transaction = _.extend(transaction, req.body);
 
     transaction.updated = Date.now()
@@ -45,7 +51,7 @@ const updateTransaction = (req, res, next) => {
         if(err){
             return res.status(400).json(dbErrorHandlers.getErrorMessage(err))
         }
-        return res.send({message: 'Data updated'})
+        return res.status(200).json('Data updated')
     })
 }
 
@@ -65,7 +71,7 @@ const transactionByID = (req, res, next, id) => {
         if(err || !transaction){
             return res.send({error: errorHandler.getErrorMessage(err)})
         }
-    req.profile = transaction;
+    req.transaction = transaction;
     next()
     })
 }

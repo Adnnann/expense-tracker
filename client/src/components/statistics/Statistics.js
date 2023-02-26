@@ -1,4 +1,4 @@
-import { getUserToken, userToken, signoutUser } from '../../features/usersSlice';
+import { getUserToken, userToken, signoutUser, setUserDataToDisplay } from '../../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Box, Grid } from '@material-ui/core';
@@ -14,10 +14,11 @@ import {
   setStatisticsOverviewLevel,
   setGroupingVarForCharts,
   setGroupingVar,
-  setFilterVarForCharts,
 } from '../../features/statisticsSlice';
 import { setTransactionsOverviewLevel } from '../../features/transactionsSlice';
 import { useFetchUserTransactionsQuery } from '../../features/transactionsAPI';
+import { useFetchUserQuery } from '../../features/userAPI';
+
 const useStyles = makeStyles((theme) => ({
   card: {
     margin: 'auto',
@@ -37,29 +38,33 @@ const Statistics = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const token = useSelector(getUserToken);
-  const [skip, setSkip] = useState(false);
-
+  
   const {
     data: userTransactions,
     isSuccess,
     isLoading,
     isError,
     error,
-  } = useFetchUserTransactionsQuery(undefined, {
-    skip: skip,
-  });
+  } = useFetchUserTransactionsQuery();;
 
+  const {
+    data: userData,
+    isSuccess:isFetchedUser,
+  } = useFetchUserQuery(undefined,{
+      skip:!userTransactions,
+  })
+    
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [anchorElStatistics, setAnchorElStatistics] = useState(null);
   const openStatistics = Boolean(anchorElStatistics);
 
   useEffect(() => {
-    if (error?.data) {
-      navigate('/');
-    }
-  }, [error]);
+  
+    error?.data && navigate('/');
+    isFetchedUser && dispatch(setUserDataToDisplay(userData));
+     
+    }, [isFetchedUser, error]);
 
   const handleClose = () => {
     setAnchorEl(null);

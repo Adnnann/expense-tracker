@@ -7,20 +7,10 @@ import PieChartIcon from '@mui/icons-material/PieChart';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import TimelineIcon from '@mui/icons-material/Timeline';
 
-const useStyles = makeStyles((theme) => ({
-  card: {
-    maxWidth: 100,
-    margin: 'auto',
-    marginTop: theme.spacing(2),
-    paddingBottom: theme.spacing(0),
-    borderStyle: 'none',
-  },
-}));
-
 const LeftPanelStatistics = (props) => {
+  
   const dispatch = useDispatch();
-
-  //chart select functions
+  // *? chart select functions
   const pieChart = () => {
     dispatch(setChartType('pie'));
   };

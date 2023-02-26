@@ -13,7 +13,7 @@ const TransactionsSchema = new mongoose.Schema({
     },
     amountInEUR:{
         type: Number,
-        default: 0,
+        default: 0,    
     },
     amountInUSD:{
         type: Number,
@@ -52,13 +52,14 @@ const TransactionsSchema = new mongoose.Schema({
 
 TransactionsSchema.path("title").validate(async function (title) {
     const transaction = await this.constructor.findOne({ title });    
-if (transaction) {    
-    if (this.id === transaction.id) {    
-        return true;    
-    }   
-     return false;    
-}    
-return true;   
+    if (transaction) {    
+        if (this.id === transaction.id) {    
+            return true;    
+        }   
+        return false;    
+    }    
+    return true;   
 }, "Transaction title must be unique!");
+
 mongoose.set('strictQuery', true)
 export default mongoose.model('Transactions', TransactionsSchema)

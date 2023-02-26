@@ -22,6 +22,7 @@ import {
   getTransactionData,
 } from '../../features/transactionsSlice';
 import { useCreateTransactionMutation } from '../../features/transactionsAPI';
+import { getCurrencyExchangeRates } from '../../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -99,14 +100,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 const AddNewExpense = () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector(getUserToken);
   const [addExpense, result] = useCreateTransactionMutation();
-
   const [currency, setCurrency] = useState('BAM');
+  const currencyRates = useSelector(getCurrencyExchangeRates)
+
+
   const [values, setValues] = useState({
-    userId: jwtDecode(token.message)._id,
     title: '',
     amount: '',
     currency: 'BAM',
@@ -116,83 +116,74 @@ const AddNewExpense = () => {
     open: false,
     error: '',
   });
-
+  //redirect to transactions page after successful expense creation
   useEffect(() => {
-    result.isSuccess && navigate('/transactions');
+    if (result.isSuccess) {
+      navigate('/transactions');
+    }
   }, [result]);
 
   const handleChange = (name) => (event) => {
-    setValues({ ...values, [name]: event.target.value });
-  };
 
+  if(name === 'amount'){
+    if(String(event.target.value).charAt(0) === "0"){
+      setValues({ ...values, [name]: event.target.value, error:'Number cannot start with 0!' });
+    }else if(event.target.value.match(/^[0-9]+$/)){
+      setValues({ ...values, [name]: Number(event.target.value), error:'' })
+    }else if(!event.target.value.match(/^[0-9]+$/) && event.target.value !== ''){
+      setValues({ ...values, [name]: event.target.value, error:'Please enter a valid number' });
+    }else{
+      setValues({ ...values, [name]: event.target.value, error:'' });
+    }
+  }else{
+    if(event.target.value.charAt(0).match(/^[0-9]+$/)){
+      setValues({ ...values, [name]: event.target.value, error:'Transaction name cannot start with number' });
+    }else if(event.target.value.length < 5){
+      setValues({ ...values, [name]: event.target.value, error:'Transaction name must be at least 5 characters long' });
+    }else{
+      setValues({ ...values, [name]: event.target.value, error:'' });
+    }
+}
+};
   const currencyHandleChange = (event) => {
     setCurrency(event.target.value);
   };
   const clickSubmit = () => {
     let expense = {
-      userId: '',
-      title: values.title || undefined,
+      title: values.title,
       amount: values.amount,
-      amountInBAM: '',
-      amountInUSD: '',
-      amountInEUR: '',
       day: date.format(new Date(), 'dddd'),
       week: 'Week ' + DateTime.now().weekNumber,
       month: date.format(new Date(), 'MMM'),
       year: date.format(new Date(), 'YYYY'),
       currency: currency || undefined,
-      type: '',
+      amountInBAM:0,
+      amountInEUR:0,
+      amountInUSD: 0,
+      type: 'expense',
     };
 
     //based on user currency input calculate all values in remaning two currencies
     switch (currency) {
+      
       case 'BAM':
-        expense = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(expense.amount).toFixed(2) || undefined,
-          amountInUSD: Number((expense.amount * 0.58).toFixed(2)) || undefined,
-          amountInEUR: Number((expense.amount * 0.51).toFixed(2)) || undefined,
-          currency: currency || undefined,
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          type: 'expense',
-        };
-        break;
+        expense.amountInBAM = Number(expense.amount) || undefined
+        expense. amountInUSD= Number(expense.amount * 0.58) || undefined
+        expense. amountInEUR= Number(expense.amount * 0.51) || undefined
+      break;
       case 'USD':
-        expense = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(expense.amount * 1.72) || undefined,
-          amountInUSD: Number(expense.amount),
-          amountInEUR: Number(expense.amount * 0.88) || undefined,
-          currency: currency || undefined,
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          type: 'expense',
-        };
-        break;
+        expense.amountInBAM = Number(expense.amount * 1.72) || undefined
+        expense.amountInUSD = Number(expense.amount)
+        expense.amountInEUR = Number(expense.amount * 0.88) || undefined
+      break;
       case 'EUR':
-        expense = {
-          userId: values.userId,
-          title: values.title || undefined,
-          amountInBAM: Number(expense.amount * 1.96) || undefined,
-          amountInUSD: Number(expense.amount * 1.14) || undefined,
-          amountInEUR: Number(expense.amount),
-          day: date.format(new Date(), 'dddd'),
-          week: 'Week ' + DateTime.now().weekNumber,
-          month: date.format(new Date(), 'MMM'),
-          year: date.format(new Date(), 'YYYY'),
-          currency: currency || undefined,
-          type: 'expense',
-        };
-        break;
+        expense.amountInBAM = Number(expense.amount * 1.96) || undefined
+        expense.amountInUSD = Number(expense.amount * 1.14) || undefined
+        expense.amountInEUR = Number(expense.amount)
+      break;
     }
-    addExpense(expense);
+    //use mutation to add new expense
+    addTransaction(expense);
   };
 
   return (
@@ -207,7 +198,7 @@ const AddNewExpense = () => {
                 className={classes.buttonGroup}
                 onClick={() => navigate('/transactions/addNewIncome')}
               >
-                Income
+                Expense
               </Button>
 
               <Button

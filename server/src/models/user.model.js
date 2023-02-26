@@ -10,35 +10,16 @@ const emailValidator = [
     })
 ]
 
-const nicknameValidator = [
-    validate({
-        validator: 'isAlphanumeric',
-        message: 'Only letters and numbers are allowed in nickname'
-    })
-]
-
 const UserSchema = new mongoose.Schema({
     firstName:{
         type:String,
         required:'First name is required',
         trim: true,
-        maxlength: [15, "First name must be less than 15 characters"],
-        match: [/^[A-Za-z\s]+$/, 'Only letters are allowed in first name']
-        
     },
     lastName:{
         type:String,
         required:'Last name is required',
         trim: true,
-        maxlength: [20, "Last name must be less than 20 characters"],
-        match: [/^[A-Za-z\s]+$/, 'Only letters are allowed in last name']
-    },
-    nickname:{
-        type:String,
-        unique:'Nickname already exists.',
-        required:'Nickname is required',
-        trim: true,
-        validate: nicknameValidator
     },
     email:{
         type:String,
@@ -84,11 +65,41 @@ UserSchema.methods = {
         return Math.round((new Date().valueOf() * Math.random())) + ''
     }
 }
-
+// Validate password length
 UserSchema.path('hashed_password').validate(function(v){
     if(this._password && this._password.length < 6){
         this.invalidate('password', 'Password must be at least 6 characters')
     }
 }, null)
-UserSchema.plugin(mongooseUniqueValidator)
+// Validate if first name and last name include only letters (no numbers or special characters)
+UserSchema.path('firstName').validate(function(v){
+    if(this.firstName.match(/[0-9!@#\$%\^\&*\)\(+=._-]+$/g)){
+        this.invalidate('firstName', 'First name can include only letters')
+    }else{
+        this.firstName = this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1).toLowerCase()
+        console.log(this.firstName)
+    }
+}, null)
+
+UserSchema.path('lastName').validate(function(v){
+    if(this.lastName.match(/[0-9!@#\$%\^\&*\)\(+=._-]+$/g)){
+        this.invalidate('lastName', 'Last name can include only letters')
+    }else{
+        this.lastName = this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1).toLowerCase()
+        console.log(this.lastName)
+    }
+}, null)
+// Validate if email is unique
+UserSchema.path("email").validate(async function (email) {
+    const user = await this.constructor.findOne({ email });
+    if (user) {
+      if (this.id === user.id) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }, "Email already exists!");
+  
+mongoose.set('strictQuery', true)
 export default mongoose.model('User', UserSchema)

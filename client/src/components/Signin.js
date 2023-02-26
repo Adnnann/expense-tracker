@@ -6,19 +6,23 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Icon from '@material-ui/core/Icon';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import {GoogleLogin } from 'react-google-login';
+import GoogleIcon from '@mui/icons-material/Google';
 import { makeStyles } from '@material-ui/core';
 import {
   signinUser,
   getUserSigninData,
-  userToken,
-  getUserToken,
-  cleanRegisteredUserData,
+  userToken,   
   setUserDataToDisplay,
+
 } from '../features/usersSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useEffect } from 'react';
-import { useSigninUserMutation } from '../features/userAPI';
+import { useSigninUserMutation, useSignUpGoogleUserMutation } from '../features/userAPI';
+import TextFields from '../components/utils/TextFieldsGenerator';
+import { fetchCurrencyExchangeRates } from '../features/exchangeRatesSlice';
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -57,25 +61,28 @@ const useStyles = makeStyles((theme) => ({
 
 const Signin = () => {
   const classes = useStyles();
-  const userSigninData = useSelector(getUserSigninData);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector(getUserToken);
+
   const [values, setValues] = useState({
     email: '',
     password: '',
   });
 
   const [signInUser, result] = useSigninUserMutation();
-
-  //if user has token (is logged) redirected to protected page
+  const [signUpGoogleUser, resultGoogleSignUp] = useSignUpGoogleUserMutation();
+  
+  console.log('resultGoogleSignUp', resultGoogleSignUp)
+  
   useEffect(() => {
-    if (result.isSuccess) {
-      dispatch(setUserDataToDisplay(result.data.user));
+    if (result.isSuccess || resultGoogleSignUp.isSuccess) {
+      dispatch(
+        setUserDataToDisplay(resultGoogleSignUp.data));
+      dispatch(fetchCurrencyExchangeRates())
       dispatch(userToken());
       navigate('/dashboard');
     }
-  }, [result]);
+  }, [result, resultGoogleSignUp]);
 
   // send request to server to login user and in case there are errors collect error
   const clickSubmit = () => {
@@ -92,9 +99,53 @@ const Signin = () => {
   };
 
   const redirectToSignup = () => {
-    dispatch(cleanRegisteredUserData());
     navigate('/signup');
   };
+
+  const textFields = ['email', 'password'];
+  const buttonFunctions = [clickSubmit, redirectToSignup];
+  const buttonValues = [values.email, values.password];
+  const changeHandler = [handleChange('email'), handleChange('password')];
+  const labels = ['Email', 'Password'];
+  const id = ['email', 'password'];
+  const buttonClasses = Array(2).fill(classes.textField);
+  const types = ['email', 'password']
+
+  const [login, setLogin] = useState(true)
+const [logout, setLogout] = useState(false)
+const [userID, setUserID] = useState("")
+  
+const logIn = (res) => {
+    if(res){
+
+      const user = {
+        email: res.profileObj.email,
+        password: res.profileObj.googleId,
+        firstName: res.profileObj.givenName,
+        lastName: res.profileObj.familyName,
+      };
+
+      signUpGoogleUser(user)
+      
+      }
+
+      setLogin(false)
+      setLogout(true)
+    }
+  
+  
+
+
+const logOut = () => {
+
+  const auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut()
+  .then(auth2.disconnect())
+  
+  setLogin(true)
+  setLogout(false)
+  setUserID("")
+}
 
   return (
     <Card className={classes.card}>
@@ -103,48 +154,55 @@ const Signin = () => {
           Sign In
         </Typography>
 
-        <TextField
-          id='email'
-          type='email'
-          label='Email'
-          className={classes.textField}
-          value={values.email}
-          onChange={handleChange('email')}
-          margin='normal'
+        <TextFields
+          fields={textFields}
+          values={buttonValues}
+          changeHandler={changeHandler}
+          labels={labels}
+          id={id}
+          buttonClasses={buttonClasses}
+          buttonFunctions={buttonFunctions}
+          types={types}
         />
-        <br />
-
-        <TextField
-          id='password'
-          type='password'
-          label='Password'
-          className={classes.textField}
-          value={values.password}
-          onChange={handleChange('password')}
-          margin='normal'
-        />
-        <br />
+      
         {
           //display error returned from server
-          Object.keys(userSigninData).length !== 0 && (
+          result.isError && (
             <Typography component='p' color='error'>
-              <Icon color='error' className={classes.error}></Icon>
-              {userSigninData.error}
-            </Typography>
-          )
+              {result.error.data}
+            </Typography>)
         }
       </CardContent>
 
       <CardActions>
+      <ButtonGroup   
+      orientation="vertical"
+        style={{margin:'0 auto'}}>
         <Button
           color='primary'
           variant='contained'
           onClick={clickSubmit}
           className={classes.submit}
+          style={{minWidth:"180px", minHeight:"60px"}}
         >
           Login
         </Button>
+   
+        <GoogleLogin
+        clientId={`477654461385-5hndheblo0s294djmmhf3kgqa8m9asls.apps.googleusercontent.com`}
+        onSuccess={logIn}
+        onFailure={logIn}
+        cookiePolicy={'single_host_origin'}
+        render={renderProps=>(
+            <Button startIcon={<GoogleIcon/>}
+            style={{margin:"0 auto", display:"-ms-flexbox", minHeight:"60px", maxWidth:"200px", backgroundColor:'red'}} color='primary' variant='contained' 
+            onClick={renderProps.onClick}>Google Sign In</Button>
+        )}
+      
+        /> 
+      </ButtonGroup>
       </CardActions>
+      
 
       <CardActions>
         <Typography component='p' className={classes.noaccount}>
@@ -156,10 +214,13 @@ const Signin = () => {
           color='primary'
           className={classes.signup}
           onClick={redirectToSignup}
+          style={{cursor:"pointer"}}
         >
           SIGN UP
         </Typography>
+      
       </CardActions>
+     
     </Card>
   );
 };

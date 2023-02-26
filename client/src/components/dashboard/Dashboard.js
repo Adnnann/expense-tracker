@@ -36,14 +36,23 @@ const Dashboard = () => {
     error,
     isLoading,
   } = useFetchUserTransactionsQuery();
-  console.log(error?.status);
+
+const{
+  data: userData,
+  isSuccess:isFetchedUser,
+} = useFetchUserQuery(undefined,{
+    skip:!userTransactionsData,
+})
+  
+
+
   useEffect(() => {
     if (error?.status) {
-      console.log(error);
       navigate('/');
       return;
     }
-  }, [error]);
+    isFetchedUser && dispatch(setUserDataToDisplay(userData));
+  }, [error, isFetchedUser]);
 
   //set timeout for user inactivity
   const timeout = 1200000;
