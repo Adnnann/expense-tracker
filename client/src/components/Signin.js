@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Signin = () => {
+
+  const KEY = process.env.REACT_APP_KEY;
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -72,8 +75,7 @@ const Signin = () => {
   const [signInUser, result] = useSigninUserMutation();
   const [signUpGoogleUser, resultGoogleSignUp] = useSignUpGoogleUserMutation();
   
-  console.log('resultGoogleSignUp', resultGoogleSignUp)
-  
+
   useEffect(() => {
     if (result.isSuccess || resultGoogleSignUp.isSuccess) {
       dispatch(
@@ -111,10 +113,7 @@ const Signin = () => {
   const buttonClasses = Array(2).fill(classes.textField);
   const types = ['email', 'password']
 
-  const [login, setLogin] = useState(true)
-const [logout, setLogout] = useState(false)
-const [userID, setUserID] = useState("")
-  
+
 const logIn = (res) => {
     if(res){
 
@@ -133,8 +132,6 @@ const logIn = (res) => {
       setLogout(true)
     }
   
-  
-
 
 const logOut = () => {
 
